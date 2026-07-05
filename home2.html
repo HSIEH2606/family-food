@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>家庭管家</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F2ED;
+  --bg2:#EFECE6;
+  --white:#FDFCF9;
+  --card:#FFFFFF;
+  --green:#4A7C59;
+  --green-l:#E8F0EB;
+  --green-m:#6A9C78;
+  --green-d:#355A40;
+  --sage:#8FAF8F;
+  --orange:#C17B4E;
+  --orange-l:#F5EBE0;
+  --red:#B85450;
+  --red-l:#F5E8E8;
+  --yellow:#B8963E;
+  --yellow-l:#F5F0E0;
+  --blue:#5A7FA8;
+  --blue-l:#E8EEF5;
+  --teal:#4A9090;
+  --teal-l:#E5F2F2;
+  --brown:#8B7355;
+  --brown-l:#F2EDE5;
+  --text:#2C2C2C;
+  --text-m:#5C5C5C;
+  --text-x:#9C9C9C;
+  --border:#E0DAD0;
+  --border-l:#EDE8E0;
+  --sh:0 1px 3px rgba(0,0,0,.05);
+  --sh2:0 4px 16px rgba(0,0,0,.08);
+  --sh3:0 8px 32px rgba(0,0,0,.12);
+  --r:16px;
+  --r2:12px
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* HEADER */
+header{background:var(--green-d);padding:0 18px;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:200;box-shadow:0 1px 8px rgba(0,0,0,.15)}
+.logo{font-size:15px;font-weight:600;color:#fff;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
+.hdr-r{display:flex;align-items:center;gap:8px}
+.sync{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;display:flex;align-items:center;gap:4px;letter-spacing:.3px}
+.sync.on{background:rgba(255,255,255,.12);color:#B8E0C0}
+.sync.off{background:rgba(200,100,100,.2);color:#F0B0B0}
+.sync-dot{width:5px;height:5px;border-radius:50%}
+.sync.on .sync-dot{background:#7DC89A;animation:pulse 2s infinite}
+.sync.off .sync-dot{background:#E08080}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.usr-btn{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:500;cursor:pointer;letter-spacing:.3px}
+
+/* MAIN TABS */
+.main-tabs{background:var(--green-d);display:flex;padding:0 16px 14px;gap:6px}
+.main-tab{flex:1;padding:8px 4px;border-radius:10px;font-size:11px;font-weight:600;cursor:pointer;border:none;text-align:center;transition:all .2s;line-height:1.4;letter-spacing:.3px}
+.main-tab.active{background:var(--white);color:var(--green-d)}
+.main-tab:not(.active){background:rgba(255,255,255,.1);color:rgba(255,255,255,.8)}
+
+main{max-width:860px;margin:0 auto;padding:18px 14px 60px}
+
+/* LOADING */
+.load-scr{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px;color:var(--text-x)}
+.spin{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-err{font-size:12px;color:var(--red);max-width:280px;text-align:center}
+
+/* DASHBOARD */
+.dash-section{margin-bottom:20px}
+.dash-title{font-size:12px;font-weight:600;color:var(--text-x);letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;padding-left:2px}
+.dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px}
+.dash-card{background:var(--card);border-radius:var(--r2);padding:14px 16px;box-shadow:var(--sh);display:flex;flex-direction:column;gap:4px}
+.dash-card-num{font-size:26px;font-weight:700;line-height:1}
+.dash-card-label{font-size:11px;color:var(--text-x);font-weight:500;letter-spacing:.3px}
+.dc-green .dash-card-num{color:var(--green)}
+.dc-orange .dash-card-num{color:var(--orange)}
+.dc-red .dash-card-num{color:var(--red)}
+.dc-blue .dash-card-num{color:var(--blue)}
+.dc-teal .dash-card-num{color:var(--teal)}
+
+/* ALERT LIST */
+.alert-list{display:flex;flex-direction:column;gap:8px}
+.alert-item{background:var(--card);border-radius:var(--r2);padding:12px 14px;box-shadow:var(--sh);display:flex;align-items:center;gap:12px;cursor:pointer}
+.alert-item:hover{box-shadow:var(--sh2)}
+.alert-icon{font-size:22px;flex-shrink:0}
+.alert-info{flex:1;min-width:0}
+.alert-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.alert-sub{font-size:11px;color:var(--text-x)}
+.alert-days{font-size:13px;font-weight:700;flex-shrink:0}
+.ad-exp{color:var(--red)}
+.ad-warn{color:var(--orange)}
+.ad-ok{color:var(--green)}
+
+/* STATS ROW */
+.stats-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.stat{background:var(--card);border-radius:var(--r2);padding:10px 13px;box-shadow:var(--sh);flex:1;min-width:70px}
+.stat-n{font-size:20px;font-weight:700;line-height:1}
+.stat-l{font-size:10px;color:var(--text-x);margin-top:3px;letter-spacing:.3px}
+.st-g .stat-n{color:var(--green)}.st-o .stat-n{color:var(--orange)}.st-r .stat-n{color:var(--red)}.st-t .stat-n{color:var(--teal)}
+
+/* TOOLBAR */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.sw{position:relative;flex:1;min-width:130px}
+.sw input{width:100%;padding:9px 12px 9px 32px;border:1px solid var(--border);border-radius:var(--r2);font-size:13px;background:var(--card);outline:none;color:var(--text);font-family:inherit}
+.sw input:focus{border-color:var(--green-m)}
+.si{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-x);pointer-events:none;font-size:13px}
+.fsel{padding:8px 10px;border:1px solid var(--border);border-radius:var(--r2);font-size:12px;background:var(--card);outline:none;color:var(--text);cursor:pointer;font-family:inherit}
+.btn-add{background:var(--green);color:#fff;border:none;padding:9px 16px;border-radius:var(--r2);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;letter-spacing:.3px}
+.btn-add:hover{background:var(--green-d)}
+
+/* FILTER TABS */
+.frow{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.ftab{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--text-m);transition:all .15s;white-space:nowrap;letter-spacing:.3px}
+.ftab.active{color:#fff;border-color:transparent;background:var(--green)}
+.ftab.hact{color:#fff;border-color:transparent;background:var(--blue)}
+.ftab-c{font-size:10px;margin-left:3px;opacity:.8}
+
+/* FOOD LIST */
+.food-list{display:flex;flex-direction:column;gap:10px}
+.food-row{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);display:flex;align-items:stretch;overflow:hidden;cursor:pointer;transition:box-shadow .15s,transform .15s}
+.food-row:hover{box-shadow:var(--sh2);transform:translateY(-1px)}
+.fr-photo{width:78px;flex-shrink:0;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:32px;overflow:hidden}
+.fr-photo img{width:100%;height:100%;object-fit:cover}
+.fr-main{flex:1;padding:10px 10px 9px;min-width:0}
+.fr-name-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;gap:6px}
+.fr-name{font-size:14px;font-weight:600;line-height:1.3;letter-spacing:.2px}
+.bc-badge{font-size:10px;color:var(--text-x)}
+.htag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;flex-shrink:0;letter-spacing:.3px}
+.htag-n{background:var(--blue-l);color:var(--blue)}
+.htag-o{background:var(--brown-l);color:var(--brown)}
+
+/* QUICK ROW */
+.qrow{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.qbtn{width:24px;height:24px;border-radius:8px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text-m);font-weight:600;flex-shrink:0;transition:all .12s}
+.qbtn:hover{border-color:var(--green);color:var(--green);background:var(--green-l)}
+.qbtn.minus:hover{border-color:var(--orange);color:var(--orange);background:var(--orange-l)}
+.qtotal{font-size:12px;font-weight:600;color:var(--text);min-width:36px;text-align:center}
+.ubtn{font-size:10px;font-weight:600;padding:3px 10px;border-radius:8px;border:1px solid var(--border-l);background:var(--bg2);color:var(--text-m);cursor:pointer;white-space:nowrap;margin-left:4px;transition:all .12s}
+.ubtn:hover{border-color:var(--red);color:var(--red);background:var(--red-l)}
+
+.fr-chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;letter-spacing:.2px}
+.ch-z{background:var(--green-l);color:var(--green-d)}
+.ch-loc{background:var(--blue-l);color:var(--blue)}
+.ch-cat{background:var(--brown-l);color:var(--brown)}
+
+/* DAYS CIRCLE */
+.dc-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 13px;flex-shrink:0;min-width:66px}
+.dc{width:46px;height:46px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:3px}
+.dc.ok{background:var(--green-l)}
+.dc.w30{background:var(--yellow-l)}
+.dc.w7{background:var(--orange-l)}
+.dc.exp{background:var(--red-l)}
+.dc.none{background:var(--bg2)}
+.dc-n{font-size:14px;font-weight:700;line-height:1}
+.dc.ok .dc-n{color:var(--green)}.dc.w30 .dc-n{color:var(--yellow)}.dc.w7 .dc-n{color:var(--orange)}.dc.exp .dc-n{color:var(--red)}.dc.none .dc-n{color:var(--text-x)}
+.dc-u{font-size:9px;font-weight:500;opacity:.7}
+.dc-d{font-size:9px;color:var(--text-x);text-align:center;margin-top:1px}
+
+/* MAINT LIST */
+.maint-list{display:flex;flex-direction:column;gap:10px}
+.mcard{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;cursor:pointer;transition:box-shadow .15s,transform .15s}
+.mcard:hover{box-shadow:var(--sh2);transform:translateY(-1px)}
+.mc-main{padding:12px 14px 6px;display:flex;align-items:flex-start;gap:10px}
+.mc-icon{font-size:24px;flex-shrink:0;margin-top:2px}
+.mc-info{flex:1;min-width:0}
+.mc-name{font-size:14px;font-weight:600;margin-bottom:4px;letter-spacing:.2px}
+.mc-meta{font-size:11px;color:var(--text-x);margin-bottom:6px}
+.mc-chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.mc-quick{display:flex;gap:6px;padding:8px 14px;background:var(--bg2);border-top:1px solid var(--border-l);align-items:center}
+.mc-stock{font-size:12px;font-weight:600;color:var(--text-m);flex:1}
+.mc-qbtn{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;border:1px solid var(--border);background:var(--card);color:var(--text-m);cursor:pointer;transition:all .12s;white-space:nowrap}
+.mc-qbtn:hover{border-color:var(--green);color:var(--green);background:var(--green-l)}
+.mc-qbtn.done:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-l)}
+
+/* REPAIR LIST */
+.rep-list{display:flex;flex-direction:column;gap:10px}
+.rcard{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;cursor:pointer;transition:box-shadow .15s,transform .15s}
+.rcard:hover{box-shadow:var(--sh2);transform:translateY(-1px)}
+.rc-main{padding:12px 14px 8px}
+.rc-name-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;gap:8px}
+.rc-name{font-size:14px;font-weight:600;letter-spacing:.2px}
+.rc-meta{font-size:11px;color:var(--text-x);margin-bottom:6px}
+.rc-chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.rc-quick{display:flex;gap:6px;padding:8px 14px;background:var(--bg2);border-top:1px solid var(--border-l);align-items:center}
+.rc-qbtn{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;border:1px solid var(--border);background:var(--card);color:var(--text-m);cursor:pointer;transition:all .12s;white-space:nowrap}
+.rc-qbtn:hover{border-color:var(--green);color:var(--green);background:var(--green-l)}
+.rc-tot{font-size:12px;font-weight:600;color:var(--green);flex:1}
+
+.upd-txt{font-size:10px;color:var(--text-x);margin-top:4px}
+
+.chip-g{background:var(--green-l);color:var(--green-d)}
+.chip-o{background:var(--orange-l);color:var(--orange)}
+.chip-b{background:var(--blue-l);color:var(--blue)}
+.chip-t{background:var(--teal-l);color:var(--teal)}
+.chip-br{background:var(--brown-l);color:var(--brown)}
+.chip-r{background:var(--red-l);color:var(--red)}
+
+.empty{text-align:center;padding:60px 20px;color:var(--text-x)}
+.empty-e{font-size:40px;margin-bottom:10px}
+.empty-t{font-size:14px;font-weight:500;margin-bottom:4px}
+.empty-s{font-size:12px}
+
+/* SHEETS */
+.sov{position:fixed;inset:0;background:rgba(20,20,20,.45);z-index:400;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.sov.open{opacity:1;pointer-events:all}
+.bsheet{background:var(--white);border-radius:24px 24px 0 0;width:100%;max-width:620px;max-height:88vh;overflow-y:auto;padding:0 20px 32px;transform:translateY(100%);transition:transform .28s ease}
+.sov.open .bsheet{transform:translateY(0)}
+.sdrag{width:32px;height:3px;background:var(--border);border-radius:2px;margin:14px auto 18px}
+.stitle{font-size:18px;font-weight:700;margin-bottom:3px;letter-spacing:.2px}
+.ssub{font-size:12px;color:var(--text-x);margin-bottom:18px}
+
+/* BATCH LIST */
+.blist{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.bitem{background:var(--bg2);border-radius:var(--r2);padding:10px 13px;display:flex;align-items:center;gap:8px}
+.bi-info{flex:1}
+.bi-qty{font-size:13px;font-weight:600}
+.bi-meta{font-size:11px;color:var(--text-x);margin-top:1px}
+.bi-days{font-size:12px;font-weight:600;min-width:55px;text-align:right}
+.bdel{padding:4px 10px;border-radius:8px;font-size:11px;font-weight:500;border:1px solid var(--border);background:var(--card);color:var(--text-x);cursor:pointer}
+.bdel:hover{border-color:var(--red);color:var(--red)}
+
+/* HISTORY */
+.hdr-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.htitle{font-size:13px;font-weight:600;letter-spacing:.3px}
+.htotal{font-size:13px;font-weight:600;color:var(--green)}
+.hlist{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.hitem{background:var(--bg2);border-radius:var(--r2);padding:11px 13px}
+.h1{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.hdate{font-size:13px;font-weight:600}
+.hamt{font-size:13px;font-weight:600;color:var(--green)}
+.h2{font-size:11px;color:var(--text-x);margin-bottom:6px;line-height:1.5}
+.hacts{display:flex;gap:5px}
+.hbtn{padding:3px 10px;border-radius:8px;font-size:11px;font-weight:500;border:1px solid var(--border);background:var(--card);cursor:pointer;color:var(--text-m)}
+.hbtn:hover{border-color:var(--green);color:var(--green)}
+.hbtn.del:hover{border-color:var(--red);color:var(--red)}
+
+.add-more{width:100%;padding:10px;border-radius:var(--r2);border:1.5px dashed var(--border);background:transparent;font-size:13px;font-weight:500;color:var(--text-x);cursor:pointer;margin-bottom:14px;font-family:inherit;letter-spacing:.3px}
+.add-more:hover{border-color:var(--green-m);color:var(--green)}
+
+.sinfo{background:var(--bg2);border-radius:var(--r2);padding:13px;margin-bottom:16px}
+.ir{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border-l)}
+.ir:last-child{border-bottom:none}
+.il{color:var(--text-x);font-weight:500;flex-shrink:0;margin-right:12px}
+.iv{text-align:right;color:var(--text)}
+
+.sfoot{display:flex;gap:8px}
+.sb-e{flex:1;padding:11px;border-radius:var(--r2);background:var(--green-l);color:var(--green-d);border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.sb-d{padding:11px 16px;border-radius:var(--r2);background:var(--red-l);color:var(--red);border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+
+/* MODALS */
+.ov{position:fixed;inset:0;background:rgba(20,20,20,.45);z-index:300;display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .2s}
+.ov.open{opacity:1;pointer-events:all}
+.modal{background:var(--white);border-radius:20px;width:100%;max-width:500px;padding:22px;box-shadow:var(--sh3);transform:translateY(14px);transition:transform .22s;margin:auto}
+.ov.open .modal{transform:translateY(0)}
+.mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.mtitle{font-size:16px;font-weight:700;color:var(--green-d);letter-spacing:.2px}
+.mclose{width:28px;height:28px;border-radius:8px;border:none;background:var(--bg2);cursor:pointer;font-size:16px;color:var(--text-m);display:flex;align-items:center;justify-content:center}
+
+.pa{border:1.5px dashed var(--border);border-radius:var(--r2);height:88px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;margin-bottom:14px;position:relative;overflow:hidden;background:var(--bg2)}
+.pa input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.pa img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:11px}
+.ph{font-size:11px;color:var(--text-x);text-align:center;pointer-events:none}
+.ph .pi{font-size:18px;margin-bottom:3px}
+
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fr-full{grid-column:1/-1}
+label{display:block;font-size:10px;font-weight:600;color:var(--text-x);margin-bottom:5px;text-transform:uppercase;letter-spacing:.6px}
+.fi{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:var(--r2);font-size:13px;color:var(--text);outline:none;background:var(--white);transition:border-color .15s;font-family:inherit}
+.fi:focus{border-color:var(--green-m)}
+
+/* TOGGLE */
+.tg{display:flex;gap:8px}
+.tb{flex:1;padding:10px 8px;border-radius:var(--r2);border:1.5px solid var(--border);background:var(--bg2);cursor:pointer;text-align:center;font-size:12px;font-weight:600;color:var(--text-m);transition:all .15s;display:block;width:100%;font-family:inherit;letter-spacing:.2px}
+.tb.ab{border-color:var(--blue);background:var(--blue-l);color:var(--blue)}
+.tb.ag{border-color:#8A8A8A;background:#F0F0F0;color:#555}
+.tb.agr{border-color:var(--green);background:var(--green-l);color:var(--green-d)}
+.tb.ao{border-color:var(--orange);background:var(--orange-l);color:var(--orange)}
+.tb.at{border-color:var(--teal);background:var(--teal-l);color:var(--teal)}
+
+/* ZONE SELECTOR */
+.zsel{display:flex;gap:6px}
+.zo{flex:1;padding:8px 4px;border-radius:var(--r2);border:1.5px solid var(--border);background:var(--bg2);cursor:pointer;text-align:center;font-size:11px;font-weight:600;color:var(--text-m);transition:all .15s}
+.zo .zi{font-size:16px;display:block;margin-bottom:2px}
+.zo.active{border-color:var(--green);background:var(--green-l);color:var(--green-d)}
+
+.mfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.bcn{padding:9px 16px;border-radius:var(--r2);font-size:13px;font-weight:500;border:1px solid var(--border);background:var(--white);color:var(--text-m);cursor:pointer;font-family:inherit}
+.bsv{padding:9px 20px;border-radius:var(--r2);font-size:13px;font-weight:600;border:none;background:var(--green);color:#fff;cursor:pointer;font-family:inherit;letter-spacing:.3px}
+.bsv:disabled{background:#aaa;cursor:not-allowed}
+.sm{max-width:380px}
+
+/* CONFIRM MODAL */
+.conf-modal{background:var(--white);border-radius:20px;width:100%;max-width:320px;padding:24px;box-shadow:var(--sh3);margin:auto;transform:translateY(14px);transition:transform .22s;text-align:center}
+.ov.open .conf-modal{transform:translateY(0)}
+.conf-icon{font-size:36px;margin-bottom:12px}
+.conf-title{font-size:16px;font-weight:700;margin-bottom:6px;color:var(--text)}
+.conf-msg{font-size:13px;color:var(--text-m);margin-bottom:20px;line-height:1.5}
+.conf-btns{display:flex;gap:8px}
+.conf-no{flex:1;padding:10px;border-radius:var(--r2);border:1px solid var(--border);background:var(--white);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;color:var(--text-m)}
+.conf-yes{flex:1;padding:10px;border-radius:var(--r2);border:none;background:var(--red);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.conf-yes.green{background:var(--green)}
+
+/* USER MODAL */
+.umod{background:var(--white);border-radius:20px;width:100%;max-width:340px;padding:24px;box-shadow:var(--sh3);margin:auto;transform:translateY(14px);transition:transform .22s}
+.ov.open .umod{transform:translateY(0)}
+.umod h2{font-size:16px;font-weight:700;color:var(--green-d);margin-bottom:5px;letter-spacing:.2px}
+.umod p{font-size:12px;color:var(--text-x);margin-bottom:16px}
+.upre{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.upr{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg2);font-size:13px;font-weight:500;cursor:pointer;color:var(--text-m);transition:all .15s}
+.upr.sel,.upr:hover{border-color:var(--green);background:var(--green-l);color:var(--green-d)}
+.urow{display:flex;gap:8px}
+.urow input{flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r2);font-size:13px;outline:none;font-family:inherit;background:var(--white)}
+.urow input:focus{border-color:var(--green-m)}
+.ucf{padding:9px 16px;border-radius:var(--r2);font-size:13px;font-weight:600;border:none;background:var(--green);color:#fff;cursor:pointer;font-family:inherit}
+
+/* TOAST */
+.toasts{position:fixed;bottom:20px;right:16px;z-index:600;display:flex;flex-direction:column;gap:8px}
+.toast{padding:10px 16px;border-radius:var(--r2);font-size:12px;font-weight:500;color:#fff;box-shadow:var(--sh2);transform:translateX(120%);transition:transform .25s ease;max-width:240px;letter-spacing:.2px}
+.toast.show{transform:translateX(0)}
+.tok{background:var(--green)}.twn{background:var(--orange)}.terr{background:var(--red)}
+
+@media(max-width:560px){
+  .dash-grid{grid-template-columns:repeat(2,1fr)}
+  .fg{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🏡 家庭管家</div>
+  <div class="hdr-r">
+    <button class="usr-btn" onclick="openUserModal()">👤 <span id="uname">設定名字</span></button>
+    <div class="sync off" id="syncBadge"><span class="sync-dot"></span><span id="syncTxt">連線中</span></div>
+  </div>
+</header>
+<div class="main-tabs">
+  <button class="main-tab active" id="tab-home" onclick="switchTab('home')">🏠 總覽</button>
+  <button class="main-tab" id="tab-fridge" onclick="switchTab('fridge')">❄️ 冰箱</button>
+  <button class="main-tab" id="tab-dry" onclick="switchTab('dry')">🍪 乾糧</button>
+  <button class="main-tab" id="tab-maint" onclick="switchTab('maint')">🔧 耗材</button>
+  <button class="main-tab" id="tab-repair" onclick="switchTab('repair')">🛠️ 維修</button>
+</div>
+<main>
+  <div class="load-scr" id="loadScr"><div class="spin"></div><div>連接資料庫中…</div><div class="load-err" id="loadErr"></div></div>
+
+  <!-- HOME -->
+  <div id="homeTab" style="display:none">
+    <div class="dash-section">
+      <div class="dash-title">食材概況</div>
+      <div class="dash-grid">
+        <div class="dash-card dc-green"><div class="dash-card-num" id="d-total">0</div><div class="dash-card-label">食材總數</div></div>
+        <div class="dash-card dc-red"><div class="dash-card-num" id="d-exp">0</div><div class="dash-card-label">已過期</div></div>
+        <div class="dash-card dc-orange"><div class="dash-card-num" id="d-warn">0</div><div class="dash-card-label">7天內到期</div></div>
+        <div class="dash-card dc-teal"><div class="dash-card-num" id="d-maint">0</div><div class="dash-card-label">耗材需更換</div></div>
+      </div>
+    </div>
+    <div class="dash-section">
+      <div class="dash-title">即將到期</div>
+      <div class="alert-list" id="alertList"></div>
+    </div>
+    <div class="dash-section">
+      <div class="dash-title">耗材提醒</div>
+      <div class="alert-list" id="maintAlertList"></div>
+    </div>
+  </div>
+
+  <!-- FRIDGE -->
+  <div id="fridgeTab" style="display:none">
+    <div class="stats-row">
+      <div class="stat st-g"><div class="stat-n" id="fT">0</div><div class="stat-l">冰箱食材</div></div>
+      <div class="stat st-o" onclick="fzMode='warn';renderFridge()"><div class="stat-n" id="fW">0</div><div class="stat-l">月內到期</div></div>
+      <div class="stat st-r" onclick="fzMode='exp';renderFridge()"><div class="stat-n" id="fE">0</div><div class="stat-l">已過期</div></div>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><span class="si">🔍</span><input type="text" id="fzSearch" placeholder="搜尋…" oninput="renderFridge()"></div>
+      <button class="btn-add" onclick="openFoodModal('fridge')">＋ 新增</button>
+    </div>
+    <div class="frow">
+      <div class="ftab active" data-fz="" onclick="setFZ(this)">全部<span class="ftab-c" id="cfz-all"></span></div>
+      <div class="ftab" data-fz="冷凍" onclick="setFZ(this)">❄️ 冷凍<span class="ftab-c" id="cfz-冷凍"></span></div>
+      <div class="ftab" data-fz="冷藏" onclick="setFZ(this)">🌡️ 冷藏<span class="ftab-c" id="cfz-冷藏"></span></div>
+    </div>
+    <div class="frow">
+      <div class="ftab active" data-fh="" onclick="setFH(this)">全部地點</div>
+      <div class="ftab" data-fh="新家" onclick="setFH(this)">🏠 新家</div>
+      <div class="ftab" data-fh="舊家" onclick="setFH(this)">🏡 舊家</div>
+    </div>
+    <div class="food-list" id="fridgeList"></div>
+  </div>
+
+  <!-- DRY -->
+  <div id="dryTab" style="display:none">
+    <div class="stats-row">
+      <div class="stat st-g"><div class="stat-n" id="dT">0</div><div class="stat-l">乾糧食材</div></div>
+      <div class="stat st-o" onclick="dyMode='warn';renderDry()"><div class="stat-n" id="dW">0</div><div class="stat-l">月內到期</div></div>
+      <div class="stat st-r" onclick="dyMode='exp';renderDry()"><div class="stat-n" id="dE">0</div><div class="stat-l">已過期</div></div>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><span class="si">🔍</span><input type="text" id="dySearch" placeholder="搜尋…" oninput="renderDry()"></div>
+      <button class="btn-add" onclick="openFoodModal('dry')">＋ 新增</button>
+    </div>
+    <div class="frow">
+      <div class="ftab active" data-dc="" onclick="setDC(this)">全部</div>
+      <div class="ftab" data-dc="零食餅乾" onclick="setDC(this)">🍪 零食餅乾</div>
+      <div class="ftab" data-dc="主食" onclick="setDC(this)">🌾 主食</div>
+      <div class="ftab" data-dc="調味料" onclick="setDC(this)">🧂 調味料</div>
+      <div class="ftab" data-dc="罐頭" onclick="setDC(this)">🥫 罐頭</div>
+      <div class="ftab" data-dc="沖泡" onclick="setDC(this)">☕ 沖泡</div>
+    </div>
+    <div class="frow">
+      <div class="ftab active" data-dh="" onclick="setDH(this)">全部地點</div>
+      <div class="ftab" data-dh="新家" onclick="setDH(this)">🏠 新家</div>
+      <div class="ftab" data-dh="舊家" onclick="setDH(this)">🏡 舊家</div>
+    </div>
+    <div class="food-list" id="dryList"></div>
+  </div>
+
+  <!-- MAINT -->
+  <div id="maintTab" style="display:none">
+    <div class="stats-row">
+      <div class="stat st-g"><div class="stat-n" id="msT">0</div><div class="stat-l">耗材</div></div>
+      <div class="stat st-o"><div class="stat-n" id="msW">0</div><div class="stat-l">7天內需換</div></div>
+      <div class="stat st-r"><div class="stat-n" id="msE">0</div><div class="stat-l">應換未換</div></div>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><span class="si">🔍</span><input type="text" id="mSearch" placeholder="搜尋耗材…" oninput="renderMaint()"></div>
+      <select class="fsel" id="mHF" onchange="renderMaint()"><option value="">全部地點</option><option value="新家">🏠 新家</option><option value="舊家">🏡 舊家</option></select>
+      <button class="btn-add" onclick="openMaintModal()">＋ 新增</button>
+    </div>
+    <div class="maint-list" id="maintList"></div>
+  </div>
+
+  <!-- REPAIR -->
+  <div id="repairTab" style="display:none">
+    <div class="stats-row">
+      <div class="stat st-g"><div class="stat-n" id="rsT">0</div><div class="stat-l">品項</div></div>
+      <div class="stat st-t"><div class="stat-n" id="rsM">0</div><div class="stat-l">保養中</div></div>
+      <div class="stat st-o"><div class="stat-n" id="rsR">0</div><div class="stat-l">維修紀錄</div></div>
+    </div>
+    <div class="toolbar">
+      <div class="sw"><span class="si">🔍</span><input type="text" id="rSearch" placeholder="搜尋…" oninput="renderRepair()"></div>
+      <select class="fsel" id="rHF" onchange="renderRepair()"><option value="">全部地點</option><option value="新家">🏠 新家</option><option value="舊家">🏡 舊家</option></select>
+      <button class="btn-add" onclick="openRepairModal()">＋ 新增</button>
+    </div>
+    <div class="rep-list" id="repairList"></div>
+  </div>
+</main>
+
+<!-- FOOD SHEET -->
+<div class="sov" id="foodSheet" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="bsheet">
+    <div class="sdrag"></div>
+    <div class="stitle" id="fdTit"></div>
+    <div class="ssub" id="fdSub"></div>
+    <div class="blist" id="fdBatches"></div>
+    <button class="add-more" onclick="openBatchModal()">＋ 新增批次</button>
+    <div class="sinfo" id="fdInfo"></div>
+    <div class="sfoot"><button class="sb-e" onclick="editFoodSh()">編輯資料</button><button class="sb-d" onclick="delFoodSh()">刪除</button></div>
+  </div>
+</div>
+
+<!-- MAINT SHEET -->
+<div class="sov" id="maintSheet" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="bsheet">
+    <div class="sdrag"></div>
+    <div class="stitle" id="mdTit"></div>
+    <div class="ssub" id="mdSub"></div>
+    <div class="hdr-row"><div class="htitle">歷史紀錄</div><div class="htotal" id="mdTot"></div></div>
+    <div class="hlist" id="mdHist"></div>
+    <button class="add-more" onclick="openMaintLogModal()">＋ 新增紀錄</button>
+    <div class="sinfo" id="mdInfo"></div>
+    <div class="sfoot"><button class="sb-e" onclick="editMaintSh()">編輯資料</button><button class="sb-d" onclick="delMaintSh()">刪除</button></div>
+  </div>
+</div>
+
+<!-- REPAIR SHEET -->
+<div class="sov" id="repairSheet" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="bsheet">
+    <div class="sdrag"></div>
+    <div class="stitle" id="rdTit"></div>
+    <div class="ssub" id="rdSub"></div>
+    <div class="hdr-row"><div class="htitle">保養紀錄</div><div class="htotal" id="rdMTot"></div></div>
+    <div class="hlist" id="rdMHist"></div>
+    <button class="add-more" onclick="openRepLogModal('maint')">＋ 新增保養紀錄</button>
+    <div class="hdr-row" style="margin-top:8px"><div class="htitle">維修紀錄</div><div class="htotal" id="rdRTot"></div></div>
+    <div class="hlist" id="rdRHist"></div>
+    <button class="add-more" onclick="openRepLogModal('repair')">＋ 新增維修紀錄</button>
+    <div class="sinfo" id="rdInfo"></div>
+    <div class="sfoot"><button class="sb-e" onclick="editRepairSh()">編輯資料</button><button class="sb-d" onclick="delRepairSh()">刪除</button></div>
+  </div>
+</div>
+
+<!-- FOOD MODAL -->
+<div class="ov" id="foodOv" onclick="if(event.target===this)closeFoodModal()">
+  <div class="modal">
+    <div class="mhdr"><div class="mtitle" id="fmTit">新增食材</div><button class="mclose" onclick="closeFoodModal()">✕</button></div>
+    <div class="pa"><input type="file" id="fPhoto" accept="image/*" onchange="handlePh(this,'fPhPrev','fPhHint','food')"><div class="ph" id="fPhHint"><div class="pi">📷</div><div>點擊上傳照片</div></div><img id="fPhPrev" style="display:none"></div>
+    <div class="fg">
+      <div class="fr-full"><label>食材名稱 *</label><input class="fi" type="text" id="fN" placeholder="例：雞胸肉"></div>
+      <div class="fr-full" id="fZoneRow"><label>溫層 *</label><div class="zsel"><div class="zo active" data-z="冷凍" onclick="selZone(this)"><span class="zi">❄️</span>冷凍</div><div class="zo" data-z="冷藏" onclick="selZone(this)"><span class="zi">🌡️</span>冷藏</div></div></div>
+      <div class="fr-full" id="fCatRow" style="display:none"><label>分類</label><div class="tg" id="fDCG">
+        <button type="button" class="tb ao" data-v="零食餅乾" onclick="tgl('fDCG',this,'ao')">🍪 零食餅乾</button>
+        <button type="button" class="tb" data-v="主食" onclick="tgl('fDCG',this,'agr')">🌾 主食</button>
+        <button type="button" class="tb" data-v="調味料" onclick="tgl('fDCG',this,'ag')">🧂 調味料</button>
+        <button type="button" class="tb" data-v="罐頭" onclick="tgl('fDCG',this,'at')">🥫 罐頭</button>
+        <button type="button" class="tb" data-v="沖泡" onclick="tgl('fDCG',this,'ab')">☕ 沖泡</button>
+      </div></div>
+      <div class="fr-full"><label>地點</label><div class="tg" id="fHG"><button type="button" class="tb ab" data-v="新家" onclick="tgl('fHG',this,'ab')">🏠 新家</button><button type="button" class="tb" data-v="舊家" onclick="tgl('fHG',this,'ag')">🏡 舊家</button></div></div>
+      <div><label>細部位置</label><input class="fi" type="text" id="fLoc" placeholder="例：上層"></div>
+      <div><label>數量（首批）</label><input class="fi" type="text" id="fQty" placeholder="例：3包"></div>
+      <div><label>保存期限（首批）</label><input class="fi" type="date" id="fExp"></div>
+      <div><label>購買日（選填）</label><input class="fi" type="date" id="fBuy"></div>
+      <div class="fr-full"><label>備註</label><input class="fi" type="text" id="fNote" placeholder="備注…"></div>
+    </div>
+    <div class="mfoot"><button class="bcn" onclick="closeFoodModal()">取消</button><button class="bsv" id="fSvBtn" onclick="saveFood()">儲存</button></div>
+  </div>
+</div>
+
+<!-- BATCH MODAL -->
+<div class="ov" id="batchOv" onclick="if(event.target===this)closeBatchModal()">
+  <div class="modal sm">
+    <div class="mhdr"><div class="mtitle" id="bmTit">新增批次</div><button class="mclose" onclick="closeBatchModal()">✕</button></div>
+    <div class="fg">
+      <div><label>數量</label><input class="fi" type="text" id="bQty" placeholder="例：2包"></div>
+      <div><label>保存期限</label><input class="fi" type="date" id="bExp"></div>
+      <div class="fr-full"><label>備註</label><input class="fi" type="text" id="bNote" placeholder="購買地點…"></div>
+    </div>
+    <div class="mfoot"><button class="bcn" onclick="closeBatchModal()">取消</button><button class="bsv" onclick="saveBatch()">新增</button></div>
+  </div>
+</div>
+
+<!-- MAINT MODAL -->
+<div class="ov" id="maintOv" onclick="if(event.target===this)closeMaintModal()">
+  <div class="modal">
+    <div class="mhdr"><div class="mtitle" id="mmTit">新增耗材</div><button class="mclose" onclick="closeMaintModal()">✕</button></div>
+    <div class="fg">
+      <div class="fr-full"><label>品項名稱 *</label><input class="fi" type="text" id="mN" placeholder="例：濾水器濾芯"></div>
+      <div class="fr-full"><label>地點</label><div class="tg" id="mHG"><button type="button" class="tb ab" data-v="新家" onclick="tgl('mHG',this,'ab')">🏠 新家</button><button type="button" class="tb" data-v="舊家" onclick="tgl('mHG',this,'ag')">🏡 舊家</button></div></div>
+      <div><label>類別</label><input class="fi" type="text" id="mCat" placeholder="例：濾芯" list="mCatDL"><datalist id="mCatDL"></datalist></div>
+      <div><label>週期（天）</label><input class="fi" type="number" id="mCyc" placeholder="例：90" min="1"></div>
+      <div><label>品牌／型號</label><input class="fi" type="text" id="mBrand" placeholder="例：3M TR1"></div>
+      <div><label>庫存數量</label><input class="fi" type="text" id="mStock" placeholder="例：2顆"></div>
+      <div class="fr-full"><label>上次更換日</label><input class="fi" type="date" id="mLast"></div>
+      <div class="fr-full"><label>備註</label><input class="fi" type="text" id="mNote" placeholder="注意事項…"></div>
+    </div>
+    <div class="mfoot"><button class="bcn" onclick="closeMaintModal()">取消</button><button class="bsv" id="mSvBtn" onclick="saveMaint()">儲存</button></div>
+  </div>
+</div>
+
+<!-- MAINT LOG MODAL (已換/新增庫存) -->
+<div class="ov" id="mlogOv" onclick="if(event.target===this)closeMLog()">
+  <div class="modal sm">
+    <div class="mhdr"><div class="mtitle" id="mlogTit">記錄更換</div><button class="mclose" onclick="closeMLog()">✕</button></div>
+    <div class="fg">
+      <div><label>日期</label><input class="fi" type="date" id="mlDate"></div>
+      <div><label>使用數量</label><input class="fi" type="number" id="mlUsed" placeholder="例：1" min="0"></div>
+      <div><label>金額（元）</label><input class="fi" type="number" id="mlAmt" placeholder="0" min="0"></div>
+      <div class="fr-full"><label>備註</label><input class="fi" type="text" id="mlNote" placeholder="備注…"></div>
+    </div>
+    <div class="mfoot"><button class="bcn" onclick="closeMLog()">取消</button><button class="bsv" onclick="saveMLog()">記錄</button></div>
+  </div>
+</div>
+
+<!-- ADD STOCK MODAL -->
+<div class="ov" id="addStockOv" onclick="if(event.target===this)closeAddStock()">
+  <div class="modal sm">
+    <div class="mhdr"><div class="mtitle">新增庫存</div><button class="mclose" onclick="closeAddStock()">✕</button></div>
+    <div class="fg">
+      <div><label>數量</label><input class="fi" type="text" id="asQty" placeholder="例：3顆"></div>
+      <div><label>金額（元）</label><input class="fi" type="number" id="asAmt" placeholder="0" min="0"></div>
+      <div class="fr-full"><label>備註</label><input class="fi" type="text" id="asNote" placeholder="購買地點…"></div>
+    </div>
+    <div class="mfoot"><button class="bcn" onclick="closeAddStock()">取消</button><button class="bsv" onclick="saveAddStock()">新增</button></div>
+  </div>
+</div>
+
+<!-- REPAIR MODAL -->
+<div class="ov" id="repairOv" onclick="if(event.target===this)closeRepairModal()">
+  <div class="modal">
+    <div class="mhdr"><div class="mtitle" id="rmTit">新增品項</div><button class="mclose" onclick="closeRepairModal()">✕</button></div>
+    <div class="fg">
+      <div class="fr-full"><label>品項名稱 *</label><input class="fi" type="text" id="rN" placeholder="例：冷氣、熱水器"></div>
+      <div class="fr-full"><label>地點</label><div class="tg" id="rHG"><button type="button" class="tb ab" data-v="新家" onclick="tgl('rHG',this,'ab')">🏠 新家</button><button type="button" class="tb" data-v="舊家" onclick="tgl('rHG',this,'ag')">🏡 舊家</button></div></div>
+      <div><label>類別</label><input class="fi" type="text" id="rCat" placeholder="例：家電" list="rCatDL"><datalist id="rCatDL"></datalist></div>
+      <div><label>品牌／型號</label><input class="fi" type="text" id="rBrand" placeholder="例：大金"></div>
+      <div class="fr-full"><label>備註</label><input class="fi" type="text" id="rNote" placeholder="備注…"></div>
+    </div>
+    <div class="mfoot"><button class="bcn" onclick="closeRepairModal()">取消</button><button class="bsv" id="rSvBtn" onclick="saveRepair()">儲存</button></div>
+  </div>
+</div>
+
+<!-- REPAIR LOG MODAL -->
+<div class="ov" id="rlogOv" onclick="if(event.target===this)closeRLog()">
+  <div class="modal">
+    <div class="mhdr"><div class="mtitle" id="rlogTit">新增保養紀錄</div><button class="mclose" onclick="closeRLog()">✕</button></div>
+    <div class="fg">
+      <div><label>日期</label><input class="fi" type="date" id="rlDate"></div>
+      <div><label>金額（元）</label><input class="fi" type="number" id="rlAmt" placeholder="0"></div>
+      <div id="rlCycRow"><label>週期（天，選填）</label><input class="fi" type="number" id="rlCyc" placeholder="例：180" min="1"></div>
+      <div class="fr-full"><label>問題描述</label><input class="fi" type="text" id="rlProb" placeholder="保養內容或問題…"></div>
+      <div class="fr-full"><label>處理方式</label><input class="fi" type="text" id="rlSol" placeholder="處理方式…"></div>
+      <div class="fr-full"><label>廠商／師傅</label><input class="fi" type="text" id="rlVen" placeholder="例：王師傅"></div>
+      <div class="fr-full"><label>備註</label><input class="fi" type="text" id="rlNote" placeholder="備注…"></div>
+    </div>
+    <div class="mfoot"><button class="bcn" onclick="closeRLog()">取消</button><button class="bsv" onclick="saveRLog()">儲存</button></div>
+  </div>
+</div>
+
+<!-- HIST EDIT -->
+<div class="ov" id="heOv" onclick="if(event.target===this)closeHE()">
+  <div class="modal sm">
+    <div class="mhdr"><div class="mtitle">編輯紀錄</div><button class="mclose" onclick="closeHE()">✕</button></div>
+    <div class="fg">
+      <div><label>日期</label><input class="fi" type="date" id="heDate"></div>
+      <div><label>金額（元）</label><input class="fi" type="number" id="heAmt"></div>
+      <div class="fr-full"><label>備註</label><input class="fi" type="text" id="heNote"></div>
+    </div>
+    <div class="mfoot"><button class="bcn" onclick="closeHE()">取消</button><button class="bsv" onclick="saveHE()">儲存</button></div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="ov" id="confOv">
+  <div class="conf-modal">
+    <div class="conf-icon" id="confIcon">🗑️</div>
+    <div class="conf-title" id="confTitle">確認刪除</div>
+    <div class="conf-msg" id="confMsg"></div>
+    <div class="conf-btns">
+      <button class="conf-no" onclick="closeConf()">取消</button>
+      <button class="conf-yes" id="confYes" onclick="doConf()">確認</button>
+    </div>
+  </div>
+</div>
+
+<!-- USER MODAL -->
+<div class="ov" id="userOv" onclick="if(event.target===this&&cu)this.classList.remove('open')">
+  <div class="umod">
+    <h2>你是誰？👋</h2>
+    <p>設定名字，讓家人知道是誰更新了紀錄</p>
+    <div class="upre" id="uPre"></div>
+    <div class="urow"><input type="text" id="uInp" placeholder="輸入你的名字" maxlength="10"><button class="ucf" onclick="saveUser()">確定</button></div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+// ── FIREBASE REST ──
+const DB = 'https://family-8a3a6-default-rtdb.asia-southeast1.firebasedatabase.app';
+async function fbGet(p){const r=await fetch(DB+'/'+p+'.json');if(!r.ok)throw new Error('GET '+r.status);return r.json();}
+async function fbPush(p,d){const r=await fetch(DB+'/'+p+'.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});if(!r.ok)throw new Error('POST '+r.status);return r.json();}
+async function fbPatch(p,d){const r=await fetch(DB+'/'+p+'.json',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});if(!r.ok)throw new Error('PATCH '+r.status);}
+async function fbDel(p){const r=await fetch(DB+'/'+p+'.json',{method:'DELETE'});if(!r.ok)throw new Error('DEL '+r.status);}
+function o2a(o){if(!o)return[];return Object.entries(o).map(function(e){return Object.assign({},e[1],{_k:e[0]});});}
+
+// ── STATE ──
+var foods=[],maints=[],repairs=[],users=[];
+var cu=localStorage.getItem('hg2_user')||'';
+var tab='home';
+var afz='',afh='',adc='',adh='';
+var fzMode='',dyMode='';
+var pBuf={food:null};
+var eFoodK=null,eMaintK=null,eRepairK=null;
+var fdK=null,mdK=null,rdK=null;
+var batchK=null,mlogK=null,addStockK=null,rlogK=null,rlogType=null;
+var heType=null,heIK=null,heRK=null;
+var confCb=null;
+var poll=null;
+var foodType='fridge'; // 'fridge' or 'dry'
+
+const CE={'肉類':'🥩','魚類':'🐟','海鮮':'🦐','蔬菜':'🥦','水果':'🍎','乳製品':'🥛','蛋類':'🥚','主食':'🍚','調味料':'🧂','零食餅乾':'🍪','麵包':'🍞','罐頭':'🥫','沖泡':'☕','冷凍食品':'🧊'};
+const ME={'濾芯':'💧','濾網':'🌀','電池':'🔋','燈泡':'💡','清潔':'🧹','冷氣':'❄️','熱水器':'🚿'};
+const ZI={'冷凍':'❄️','冷藏':'🌡️'};
+
+if(cu)document.getElementById('uname').textContent=cu;
+else setTimeout(openUserModal,600);
+
+// ── INIT ──
+async function init(){
+  try{
+    var res=await Promise.all([fbGet('foods_v2'),fbGet('maints_v2'),fbGet('repairs2'),fbGet('users')]);
+    foods=o2a(res[0]);maints=o2a(res[1]);repairs=o2a(res[2]);
+    users=res[3]?Object.values(res[3]):[];
+    document.getElementById('loadScr').style.display='none';
+    showTab(tab);setSynced(true);
+    renderAll();buildUPre();
+    poll=setInterval(refresh,30000);
+  }catch(e){
+    document.getElementById('loadErr').textContent='連線失敗：'+e.message;
+  }
+}
+async function refresh(){
+  try{
+    var res=await Promise.all([fbGet('foods_v2'),fbGet('maints_v2'),fbGet('repairs2'),fbGet('users')]);
+    foods=o2a(res[0]);maints=o2a(res[1]);repairs=o2a(res[2]);
+    users=res[3]?Object.values(res[3]):[];
+    setSynced(true);renderAll();buildUPre();
+  }catch(e){setSynced(false);}
+}
+function renderAll(){renderHome();renderFridge();renderDry();renderMaint();renderRepair();}
+function setSynced(ok){var b=document.getElementById('syncBadge');b.className='sync '+(ok?'on':'off');document.getElementById('syncTxt').textContent=ok?'已同步':'連線失敗';}
+
+// ── UTILS ──
+function dl(e){if(!e)return null;return Math.floor((new Date(e)-new Date())/86400000);}
+function ec(d){if(d===null)return'none';if(d<0)return'exp';if(d<=7)return'w7';if(d<=30)return'w30';return'ok';}
+function et(d){if(d===null)return'未設定';if(d<0)return'過期'+Math.abs(d)+'天';if(d===0)return'今天';if(d===1)return'明天';return'剩'+d+'天';}
+function fd(s){if(!s)return'';var p=s.split('-');return parseInt(p[1])+'/'+parseInt(p[2]);}
+function ff(s){if(!s)return'';var p=s.split('-');return p[0]+'/'+parseInt(p[1])+'/'+parseInt(p[2]);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function ta(ts){if(!ts)return'';var d=Math.floor((Date.now()-ts)/1000);if(d<60)return'剛剛';if(d<3600)return Math.floor(d/60)+'分前';if(d<86400)return Math.floor(d/3600)+'小時前';return Math.floor(d/86400)+'天前';}
+function td(){return new Date().toISOString().slice(0,10);}
+function gBatches(f){if(!f.batches)return[];return Object.entries(f.batches).map(function(e){return Object.assign({},e[1],{_bk:e[0]});});}
+function gEB(f){var bs=gBatches(f).filter(function(b){return b.expiry;});if(!bs.length)return gBatches(f)[0]||null;return bs.sort(function(a,b){return new Date(a.expiry)-new Date(b.expiry);})[0];}
+function gQty(f){var bs=gBatches(f);if(!bs.length)return'—';var p=bs.map(function(b){return b.qty||'';}).filter(Boolean);if(p.length===1)return p[0];var m=p.map(function(x){return x.match(/^([\d.]+)\s*(.*)$/);});if(m.every(function(x){return x&&x[2]===m[0][2];})){var s=m.reduce(function(a,x){return a+parseFloat(x[1]);},0);return(Number.isInteger(s)?s:s.toFixed(1))+m[0][2];}return p.join('+');}
+function gHist(item,path){if(!item[path])return[];return Object.entries(item[path]).map(function(e){return Object.assign({},e[1],{_hk:e[0]});});}
+function mNext(item){if(!item.lastDate||!item.cycle)return null;var d=new Date(item.lastDate);d.setDate(d.getDate()+parseInt(item.cycle));return d.toISOString().slice(0,10);}
+function mDL(item){var n=mNext(item);return n?dl(n):null;}
+function isFridge(item){return item.zone==='冷凍'||item.zone==='冷藏';}
+function isDry(item){return item.zone==='常溫'||!item.zone;}
+
+// ── TAB ──
+function switchTab(t){tab=t;['home','fridge','dry','maint','repair'].forEach(function(x){document.getElementById('tab-'+x).className='main-tab'+(x===t?' active':'');});showTab(t);}
+function showTab(t){['home','fridge','dry','maint','repair'].forEach(function(x){document.getElementById(x+'Tab').style.display=x===t?'block':'none';});}
+
+// ── HOME ──
+function renderHome(){
+  var fridgeFoods=foods.filter(isFridge);
+  var dryFoods=foods.filter(isDry);
+  var allFoods=foods;
+  var expItems=allFoods.filter(function(i){var eb=gEB(i);var d=eb?dl(eb.expiry):null;return d!==null&&d<0;});
+  var warnItems=allFoods.filter(function(i){var eb=gEB(i);var d=eb?dl(eb.expiry):null;return d!==null&&d>=0&&d<=7;});
+  var maintWarn=maints.filter(function(i){var d=mDL(i);return d!==null&&d<=7;});
+  document.getElementById('d-total').textContent=allFoods.length;
+  document.getElementById('d-exp').textContent=expItems.length;
+  document.getElementById('d-warn').textContent=warnItems.length;
+  document.getElementById('d-maint').textContent=maintWarn.length;
+  // Alert list - expired + warn
+  var alerts=allFoods.filter(function(i){var eb=gEB(i);var d=eb?dl(eb.expiry):null;return d!==null&&d<=7;}).sort(function(a,b){var da=dl(gEB(a).expiry)||0,db2=dl(gEB(b).expiry)||0;return da-db2;}).slice(0,10);
+  var al=document.getElementById('alertList');
+  if(!alerts.length){al.innerHTML='<div style="color:var(--text-x);font-size:13px;text-align:center;padding:16px">近期無到期食材 🎉</div>';return;}
+  al.innerHTML=alerts.map(function(item){
+    var eb=gEB(item);var d=dl(eb.expiry);var cls=ec(d);
+    var icon=CE[item.category]||'🥡';
+    return '<div class="alert-item" onclick="switchTab(\''+(isFridge(item)?'fridge':'dry')+'\')">'+
+      '<div class="alert-icon">'+icon+'</div>'+
+      '<div class="alert-info"><div class="alert-name">'+esc(item.name)+'</div><div class="alert-sub">'+(item.house==='新家'?'🏠':'🏡')+' '+esc(item.house)+' · '+fd(eb.expiry)+'</div></div>'+
+      '<div class="alert-days ad-'+(d<0?'exp':d<=7?'warn':'ok')+'">'+et(d)+'</div>'+
+    '</div>';
+  }).join('');
+  // Maint alerts
+  var mal=document.getElementById('maintAlertList');
+  if(!maintWarn.length){mal.innerHTML='<div style="color:var(--text-x);font-size:13px;text-align:center;padding:16px">無需更換耗材 ✓</div>';return;}
+  mal.innerHTML=maintWarn.map(function(item){
+    var d=mDL(item);var icon=ME[item.category]||'🔧';
+    return '<div class="alert-item" onclick="switchTab(\'maint\')">'+
+      '<div class="alert-icon">'+icon+'</div>'+
+      '<div class="alert-info"><div class="alert-name">'+esc(item.name)+'</div><div class="alert-sub">'+(item.house==='新家'?'🏠':'🏡')+' '+esc(item.house)+'</div></div>'+
+      '<div class="alert-days ad-'+(d<0?'exp':'warn')+'">'+et(d)+'</div>'+
+    '</div>';
+  }).join('');
+}
+
+// ── FOOD LIST RENDERER ──
+function renderFoodList(items,containerId){
+  var el=document.getElementById(containerId);
+  if(!items.length){el.innerHTML='<div class="empty"><div class="empty-e">🥡</div><div class="empty-t">沒有食材</div><div class="empty-s">點右上角＋新增</div></div>';return;}
+  el.innerHTML=items.map(function(item){
+    var eb=gEB(item);var d=eb?dl(eb.expiry):null;
+    var cls=ec(d);var bc=gBatches(item).length;var tq=gQty(item);
+    var ph=item.photo?'<img src="'+item.photo+'" alt="">':(CE[item.category]||'🥡');
+    var dn=d===null?'—':(d<0?Math.abs(d):d);
+    var du=d===null?'':(d<0?'天前':'天');
+    var isn=item.house==='新家';
+    return '<div class="food-row" onclick="openFoodSheet(\''+item._k+'\')">'+
+      '<div class="fr-photo">'+ph+'</div>'+
+      '<div class="fr-main">'+
+        '<div class="fr-name-row">'+
+          '<div class="fr-name">'+esc(item.name)+(bc>1?'<span class="bc-badge"> ('+bc+'批)</span>':'')+'</div>'+
+          '<span class="htag '+(isn?'htag-n':'htag-o')+'">'+(isn?'🏠 新家':'🏡 舊家')+'</span>'+
+        '</div>'+
+        '<div class="qrow" onclick="event.stopPropagation()">'+
+          '<button class="qbtn minus" onclick="qMinus(\''+item._k+'\')">−</button>'+
+          '<span class="qtotal">'+esc(tq)+'</span>'+
+          '<button class="qbtn" onclick="openBatchDirect(\''+item._k+'\',event)">＋</button>'+
+          '<button class="ubtn" onclick="markUsed(\''+item._k+'\',\''+esc(item.name)+'\',event)">用完</button>'+
+        '</div>'+
+        '<div class="fr-chips">'+
+          (item.zone?'<span class="chip ch-z">'+(ZI[item.zone]||'')+' '+esc(item.zone)+'</span>':'')+
+          (item.category?'<span class="chip ch-cat">'+esc(item.category)+'</span>':'')+
+          (item.location?'<span class="chip ch-loc">📍'+esc(item.location)+'</span>':'')+
+        '</div>'+
+      '</div>'+
+      '<div class="dc-wrap">'+
+        '<div class="dc '+cls+'"><span class="dc-n">'+dn+'</span><span class="dc-u">'+du+'</span></div>'+
+        '<div class="dc-d">'+(eb&&eb.expiry?fd(eb.expiry):'')+'</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+// ── FRIDGE ──
+function renderFridge(){
+  var q=(document.getElementById('fzSearch').value||'').toLowerCase();
+  var items=foods.filter(isFridge).filter(function(i){
+    var mq=!q||(i.name||'').toLowerCase().indexOf(q)>=0;
+    var mz=!afz||i.zone===afz;
+    var mh=!afh||i.house===afh;
+    var eb=gEB(i);var d=eb?dl(eb.expiry):null;
+    var mf=!fzMode||(fzMode==='warn'&&d!==null&&d>=0&&d<=30)||(fzMode==='exp'&&d!==null&&d<0);
+    return mq&&mz&&mh&&mf;
+  }).sort(function(a,b){var ea=gEB(a),eb2=gEB(b);return (ea?dl(ea.expiry)||9999:9999)-(eb2?dl(eb2.expiry)||9999:9999);});
+  var all=foods.filter(isFridge);
+  document.getElementById('fT').textContent=all.length;
+  document.getElementById('fW').textContent=all.filter(function(i){var eb=gEB(i);var d=eb?dl(eb.expiry):null;return d!==null&&d>=0&&d<=30;}).length;
+  document.getElementById('fE').textContent=all.filter(function(i){var eb=gEB(i);var d=eb?dl(eb.expiry):null;return d!==null&&d<0;}).length;
+  var setC=function(id,val){var e=document.getElementById(id);if(e)e.textContent=' '+val;};
+  setC('cfz-all',all.length);
+  ['冷凍','冷藏'].forEach(function(z){setC('cfz-'+z,all.filter(function(i){return i.zone===z;}).length);});
+  renderFoodList(items,'fridgeList');
+}
+
+// ── DRY ──
+function renderDry(){
+  var q=(document.getElementById('dySearch').value||'').toLowerCase();
+  var items=foods.filter(isDry).filter(function(i){
+    var mq=!q||(i.name||'').toLowerCase().indexOf(q)>=0;
+    var mc=!adc||i.category===adc;
+    var mh=!adh||i.house===adh;
+    var eb=gEB(i);var d=eb?dl(eb.expiry):null;
+    var mf=!dyMode||(dyMode==='warn'&&d!==null&&d>=0&&d<=30)||(dyMode==='exp'&&d!==null&&d<0);
+    return mq&&mc&&mh&&mf;
+  }).sort(function(a,b){var ea=gEB(a),eb2=gEB(b);return (ea?dl(ea.expiry)||9999:9999)-(eb2?dl(eb2.expiry)||9999:9999);});
+  var all=foods.filter(isDry);
+  document.getElementById('dT').textContent=all.length;
+  document.getElementById('dW').textContent=all.filter(function(i){var eb=gEB(i);var d=eb?dl(eb.expiry):null;return d!==null&&d>=0&&d<=30;}).length;
+  document.getElementById('dE').textContent=all.filter(function(i){var eb=gEB(i);var d=eb?dl(eb.expiry):null;return d!==null&&d<0;}).length;
+  renderFoodList(items,'dryList');
+}
+
+// ── MAINT ──
+function renderMaint(){
+  var q=(document.getElementById('mSearch').value||'').toLowerCase();
+  var mhf=document.getElementById('mHF').value;
+  var items=maints.filter(function(i){
+    var mq=!q||(i.name||'').toLowerCase().indexOf(q)>=0;
+    return mq&&(!mhf||i.house===mhf);
+  }).sort(function(a,b){return (mDL(a)||9999)-(mDL(b)||9999);});
+  document.getElementById('msT').textContent=maints.length;
+  document.getElementById('msW').textContent=maints.filter(function(i){var d=mDL(i);return d!==null&&d>=0&&d<=7;}).length;
+  document.getElementById('msE').textContent=maints.filter(function(i){var d=mDL(i);return d!==null&&d<0;}).length;
+  var cats=[...new Set(maints.map(function(i){return i.category;}).filter(Boolean))].sort();
+  document.getElementById('mCatDL').innerHTML=cats.map(function(c){return '<option value="'+esc(c)+'">';}).join('');
+  var el=document.getElementById('maintList');
+  if(!items.length){el.innerHTML='<div class="empty"><div class="empty-e">🔧</div><div class="empty-t">還沒有耗材</div><div class="empty-s">點右上角＋新增</div></div>';return;}
+  el.innerHTML=items.map(function(item){
+    var d=mDL(item);var cls=ec(d);var icon=ME[item.category]||'🔧';
+    var nd=mNext(item);
+    var logs=gHist(item,'history');
+    var tot=logs.reduce(function(s,h){return s+(parseFloat(h.amount)||0);},0);
+    var stockStr=item.stock?'庫存：'+item.stock:'';
+    var nextOrLast=nd?('下次更換：'+ff(nd)):(item.lastDate?'上次更換：'+ff(item.lastDate):'尚未記錄');
+    return '<div class="mcard" onclick="openMaintSheet(\''+item._k+'\')">'+
+      '<div class="mc-main">'+
+        '<div class="mc-icon">'+icon+'</div>'+
+        '<div class="mc-info">'+
+          '<div class="mc-name">'+esc(item.name)+'</div>'+
+          '<div class="mc-meta">'+(item.house==='新家'?'🏠':'🏡')+' '+esc(item.house)+(item.brand?' · '+esc(item.brand):'')+'</div>'+
+          '<div class="mc-chips">'+
+            (item.category?'<span class="chip chip-g">'+esc(item.category)+'</span>':'')+
+            (stockStr?'<span class="chip chip-b">'+esc(stockStr)+'</span>':'')+
+            '<span class="chip '+(d!==null&&d<0?'chip-r':d!==null&&d<=7?'chip-o':'chip-g')+'">'+nextOrLast+'</span>'+
+          '</div>'+
+          (item.updatedBy?'<div class="upd-txt">✏️ '+esc(item.updatedBy)+' · '+ta(item.updatedAt)+'</div>':'')+
+        '</div>'+
+      '</div>'+
+      '<div class="mc-quick" onclick="event.stopPropagation()">'+
+        '<span class="mc-stock">'+(tot>0?'累計 NT$'+tot.toLocaleString():'')+'</span>'+
+        '<button class="mc-qbtn" onclick="openAddStock(\''+item._k+'\')">＋ 庫存</button>'+
+        '<button class="mc-qbtn done" onclick="openMLogDirect(\''+item._k+'\')">已換 ✓</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+// ── REPAIR ──
+function renderRepair(){
+  var q=(document.getElementById('rSearch').value||'').toLowerCase();
+  var rhf=document.getElementById('rHF').value;
+  var items=repairs.filter(function(i){
+    var mq=!q||(i.name||'').toLowerCase().indexOf(q)>=0;
+    return mq&&(!rhf||i.house===rhf);
+  });
+  document.getElementById('rsT').textContent=repairs.length;
+  var allLogs=repairs.reduce(function(s,i){return s+gHist(i,'maintLogs').length;},0);
+  var allRep=repairs.reduce(function(s,i){return s+gHist(i,'repairLogs').length;},0);
+  document.getElementById('rsM').textContent=allLogs;
+  document.getElementById('rsR').textContent=allRep;
+  var cats=[...new Set(repairs.map(function(i){return i.category;}).filter(Boolean))].sort();
+  document.getElementById('rCatDL').innerHTML=cats.map(function(c){return '<option value="'+esc(c)+'">';}).join('');
+  var el=document.getElementById('repairList');
+  if(!items.length){el.innerHTML='<div class="empty"><div class="empty-e">🛠️</div><div class="empty-t">還沒有品項</div><div class="empty-s">點右上角＋新增</div></div>';return;}
+  el.innerHTML=items.map(function(item){
+    var mLogs=gHist(item,'maintLogs').sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+    var rLogs=gHist(item,'repairLogs').sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+    var lastMaint=mLogs.length?mLogs[0]:null;
+    var nextMaint=null;
+    if(lastMaint&&lastMaint.cycle){var nd2=new Date(lastMaint.date);nd2.setDate(nd2.getDate()+parseInt(lastMaint.cycle));nextMaint=nd2.toISOString().slice(0,10);}
+    var nmDl=nextMaint?dl(nextMaint):null;
+    var tot=(mLogs.concat(rLogs)).reduce(function(s,l){return s+(parseFloat(l.amount)||0);},0);
+    var isn=item.house==='新家';
+    return '<div class="rcard" onclick="openRepairSheet(\''+item._k+'\')">'+
+      '<div class="rc-main">'+
+        '<div class="rc-name-row"><div class="rc-name">'+esc(item.name)+'</div><span class="htag '+(isn?'htag-n':'htag-o')+'">'+(isn?'🏠 新家':'🏡 舊家')+'</span></div>'+
+        '<div class="rc-meta">'+(item.category?esc(item.category):'')+(item.brand?' · '+esc(item.brand):'')+'</div>'+
+        '<div class="rc-chips">'+
+          (nextMaint?'<span class="chip '+(nmDl!==null&&nmDl<=7?'chip-o':'chip-g')+'">下次保養：'+ff(nextMaint)+'</span>':'')+
+          (lastMaint?'<span class="chip chip-b">上次保養：'+ff(lastMaint.date)+'</span>':'')+
+          (rLogs.length?'<span class="chip chip-br">維修 '+rLogs.length+'次</span>':'')+
+        '</div>'+
+        (item.updatedBy?'<div class="upd-txt">✏️ '+esc(item.updatedBy)+' · '+ta(item.updatedAt)+'</div>':'')+
+      '</div>'+
+      '<div class="rc-quick" onclick="event.stopPropagation()">'+
+        '<span class="rc-tot">'+(tot>0?'累計 NT$'+tot.toLocaleString():'')+'</span>'+
+        '<button class="rc-qbtn" onclick="openRepLogModal(\'maint\',\''+item._k+'\')">＋ 保養</button>'+
+        '<button class="rc-qbtn" onclick="openRepLogModal(\'repair\',\''+item._k+'\')">＋ 維修</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+// ── FOOD SHEET ──
+function openFoodSheet(k){
+  fdK=k;var item=foods.find(function(i){return i._k===k;});if(!item)return;
+  document.getElementById('fdTit').textContent=item.name;
+  document.getElementById('fdSub').textContent=(item.zone?ZI[item.zone]+' '+item.zone+' · ':'')+' '+(item.house==='新家'?'🏠':'🏡')+' '+item.house+(item.location?' · 📍'+item.location:'');
+  rfBatches(item);
+  document.getElementById('fdInfo').innerHTML=
+    '<div class="ir"><span class="il">類別</span><span class="iv">'+esc(item.category||'—')+'</span></div>'+
+    (item.buyDate?'<div class="ir"><span class="il">購買日</span><span class="iv">'+ff(item.buyDate)+'</span></div>':'')+
+    '<div class="ir"><span class="il">備註</span><span class="iv">'+esc(item.note||'—')+'</span></div>'+
+    '<div class="ir"><span class="il">更新者</span><span class="iv">'+esc(item.updatedBy||'')+' '+ta(item.updatedAt)+'</span></div>';
+  document.getElementById('foodSheet').classList.add('open');
+}
+function rfBatches(item){
+  var bs=gBatches(item).sort(function(a,b){return (a.expiry?dl(a.expiry):9999)-(b.expiry?dl(b.expiry):9999);});
+  document.getElementById('fdBatches').innerHTML=bs.length?bs.map(function(b){
+    var d=b.expiry?dl(b.expiry):null;var cls=ec(d);
+    return '<div class="bitem"><div class="bi-info"><div class="bi-qty">'+esc(b.qty||'—')+'</div><div class="bi-meta">'+(b.expiry?'到期：'+ff(b.expiry):'')+(b.note?' · '+esc(b.note):'')+'</div></div><div class="bi-days" style="color:var(--'+cls2color(cls)+')">'+et(d)+'</div><button class="bdel" onclick="delBatch(\''+item._k+'\',\''+b._bk+'\')">移除</button></div>';
+  }).join(''):'<div style="color:var(--text-x);font-size:13px;padding:8px 0">點下方新增批次</div>';
+}
+function cls2color(c){return c==='exp'?'red':c==='w7'?'orange':c==='w30'?'yellow':'green';}
+function editFoodSh(){document.getElementById('foodSheet').classList.remove('open');openFoodModal(isFridge(foods.find(function(i){return i._k===fdK;})||{})?'fridge':'dry',fdK);}
+async function delFoodSh(){
+  var item=foods.find(function(i){return i._k===fdK;});if(!item)return;
+  showConf('🗑️','確定刪除？','刪除「'+item.name+'」，此動作無法復原',async function(){
+    await fbDel('foods_v2/'+fdK);document.getElementById('foodSheet').classList.remove('open');
+    foods=o2a(await fbGet('foods_v2'));renderAll();toast('已刪除「'+item.name+'」','twn');
+  });
+}
+
+// ── MAINT SHEET ──
+function openMaintSheet(k){
+  mdK=k;var item=maints.find(function(i){return i._k===k;});if(!item)return;
+  document.getElementById('mdTit').textContent=item.name;
+  document.getElementById('mdSub').textContent=(item.house==='新家'?'🏠':'🏡')+' '+item.house+(item.category?' · '+item.category:'')+(item.brand?' · '+item.brand:'');
+  rfMaintHist(item);
+  var nd=mNext(item);
+  document.getElementById('mdInfo').innerHTML=
+    '<div class="ir"><span class="il">品牌／型號</span><span class="iv">'+esc(item.brand||'—')+'</span></div>'+
+    '<div class="ir"><span class="il">庫存數量</span><span class="iv">'+esc(item.stock||'—')+'</span></div>'+
+    '<div class="ir"><span class="il">上次更換</span><span class="iv">'+(item.lastDate?ff(item.lastDate):'—')+'</span></div>'+
+    (nd?'<div class="ir"><span class="il">下次更換</span><span class="iv">'+ff(nd)+'</span></div>':'')+
+    '<div class="ir"><span class="il">備註</span><span class="iv">'+esc(item.note||'—')+'</span></div>';
+  document.getElementById('maintSheet').classList.add('open');
+}
+function rfMaintHist(item){
+  var hs=gHist(item,'history').sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+  var tot=hs.reduce(function(s,h){return s+(parseFloat(h.amount)||0);},0);
+  document.getElementById('mdTot').textContent=tot>0?'總花費 NT$'+tot.toLocaleString():'';
+  document.getElementById('mdHist').innerHTML=hs.length?hs.map(function(h){
+    return '<div class="hitem"><div class="h1"><div class="hdate">'+ff(h.date)+'</div>'+(h.amount?'<div class="hamt">NT$'+parseFloat(h.amount).toLocaleString()+'</div>':'')+'</div>'+
+    '<div class="h2">'+(h.used?'使用 '+esc(h.used)+' · ':'')+(h.note?esc(h.note):'—')+(h.by?' · '+esc(h.by):'')+'</div>'+
+    '<div class="hacts"><button class="hbtn" onclick="openHE(\'maint\',\''+item._k+'\',\''+h._hk+'\')">編輯</button><button class="hbtn del" onclick="delHist(\'maint\',\''+item._k+'\',\''+h._hk+'\')">刪除</button></div></div>';
+  }).join(''):'<div style="color:var(--text-x);font-size:13px;text-align:center;padding:12px">還沒有紀錄</div>';
+}
+function editMaintSh(){document.getElementById('maintSheet').classList.remove('open');openMaintModal(mdK);}
+async function delMaintSh(){
+  var item=maints.find(function(i){return i._k===mdK;});if(!item)return;
+  showConf('🗑️','確定刪除？','刪除「'+item.name+'」，此動作無法復原',async function(){
+    await fbDel('maints_v2/'+mdK);document.getElementById('maintSheet').classList.remove('open');
+    maints=o2a(await fbGet('maints_v2'));renderAll();toast('已刪除「'+item.name+'」','twn');
+  });
+}
+
+// ── REPAIR SHEET ──
+function openRepairSheet(k){
+  rdK=k;var item=repairs.find(function(i){return i._k===k;});if(!item)return;
+  document.getElementById('rdTit').textContent=item.name;
+  document.getElementById('rdSub').textContent=(item.house==='新家'?'🏠':'🏡')+' '+item.house+(item.category?' · '+item.category:'')+(item.brand?' · '+item.brand:'');
+  rfRepairSheet(item);
+  document.getElementById('rdInfo').innerHTML=
+    '<div class="ir"><span class="il">備註</span><span class="iv">'+esc(item.note||'—')+'</span></div>'+
+    '<div class="ir"><span class="il">更新者</span><span class="iv">'+esc(item.updatedBy||'')+' '+ta(item.updatedAt)+'</span></div>';
+  document.getElementById('repairSheet').classList.add('open');
+}
+function rfRepairSheet(item){
+  var mLogs=gHist(item,'maintLogs').sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+  var rLogs=gHist(item,'repairLogs').sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+  var mTot=mLogs.reduce(function(s,l){return s+(parseFloat(l.amount)||0);},0);
+  var rTot=rLogs.reduce(function(s,l){return s+(parseFloat(l.amount)||0);},0);
+  document.getElementById('rdMTot').textContent=mTot>0?'NT$'+mTot.toLocaleString():'';
+  document.getElementById('rdRTot').textContent=rTot>0?'NT$'+rTot.toLocaleString():'';
+  function renderLogs(logs,type){
+    return logs.length?logs.map(function(l){
+      return '<div class="hitem"><div class="h1"><div class="hdate">'+ff(l.date)+'</div>'+(l.amount?'<div class="hamt">NT$'+parseFloat(l.amount).toLocaleString()+'</div>':'')+'</div>'+
+      '<div class="h2">'+(l.problem?esc(l.problem):'')+(l.solution?' → '+esc(l.solution):'')+(l.vendor?' · '+esc(l.vendor):'')+(l.note?' · '+esc(l.note):'')+(l.by?' · '+esc(l.by):'')+'</div>'+
+      (type==='maint'&&l.cycle?'<div style="font-size:10px;color:var(--text-x)">週期：'+l.cycle+'天</div>':'')+
+      '<div class="hacts"><button class="hbtn" onclick="openRepHE(\''+type+'\',\''+item._k+'\',\''+l._hk+'\')">編輯</button><button class="hbtn del" onclick="delRepHist(\''+type+'\',\''+item._k+'\',\''+l._hk+'\')">刪除</button></div></div>';
+    }).join(''):'<div style="color:var(--text-x);font-size:13px;text-align:center;padding:8px">還沒有紀錄</div>';
+  }
+  document.getElementById('rdMHist').innerHTML=renderLogs(mLogs,'maint');
+  document.getElementById('rdRHist').innerHTML=renderLogs(rLogs,'repair');
+}
+function editRepairSh(){document.getElementById('repairSheet').classList.remove('open');openRepairModal(rdK);}
+async function delRepairSh(){
+  var item=repairs.find(function(i){return i._k===rdK;});if(!item)return;
+  showConf('🗑️','確定刪除？','刪除「'+item.name+'」，此動作無法復原',async function(){
+    await fbDel('repairs2/'+rdK);document.getElementById('repairSheet').classList.remove('open');
+    repairs=o2a(await fbGet('repairs2'));renderAll();toast('已刪除「'+item.name+'」','twn');
+  });
+}
+
+// ── BATCH ──
+function openBatchModal(){batchK=fdK;_openBatch();}
+function openBatchDirect(k,e){e&&e.stopPropagation();batchK=k;_openBatch();}
+function _openBatch(){
+  var item=foods.find(function(i){return i._k===batchK;});
+  document.getElementById('bmTit').textContent='新增批次－'+(item?item.name:'');
+  ['bQty','bExp','bNote'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('batchOv').classList.add('open');
+}
+function closeBatchModal(){document.getElementById('batchOv').classList.remove('open');}
+async function saveBatch(){
+  var qty=document.getElementById('bQty').value.trim();
+  var exp=document.getElementById('bExp').value;
+  if(!qty&&!exp){toast('請填寫數量或期限','terr');return;}
+  if(!cu){openUserModal();return;}
+  await fbPush('foods_v2/'+batchK+'/batches',{qty:qty,expiry:exp,note:document.getElementById('bNote').value.trim()});
+  await fbPatch('foods_v2/'+batchK,{updatedAt:Date.now(),updatedBy:cu});
+  closeBatchModal();toast('批次已新增','tok');
+  foods=o2a(await fbGet('foods_v2'));renderAll();
+  var item=foods.find(function(i){return i._k===batchK;});
+  if(item&&document.getElementById('foodSheet').classList.contains('open'))rfBatches(item);
+}
+async function delBatch(fk,bk){
+  showConf('🗑️','移除批次？','確定要移除這筆批次嗎？',async function(){
+    await fbDel('foods_v2/'+fk+'/batches/'+bk);
+    await fbPatch('foods_v2/'+fk,{updatedAt:Date.now(),updatedBy:cu||'系統'});
+    foods=o2a(await fbGet('foods_v2'));renderAll();
+    var item=foods.find(function(i){return i._k===fk;});
+    if(item)rfBatches(item);
+    toast('批次已移除','twn');
+  });
+}
+
+// ── QUICK USE ──
+async function qMinus(k){
+  if(!cu){openUserModal();return;}
+  var item=foods.find(function(i){return i._k===k;});if(!item)return;
+  var bs=gBatches(item).sort(function(a,b){return (a.expiry?dl(a.expiry):9999)-(b.expiry?dl(b.expiry):9999);});
+  if(!bs.length)return;
+  var eb=bs[0];var m=(eb.qty||'').match(/^([\d.]+)(.*)/);
+  if(m){
+    var n=parseFloat(m[1])-1;
+    if(n<0)return;
+    if(n===0){
+      showConf('📦','數量歸零','「'+item.name+'」這批已用完，要刪除這張卡片嗎？',async function(){
+        await fbDel('foods_v2/'+k+'/batches/'+eb._bk);
+        var remaining=bs.slice(1);
+        if(remaining.length===0){await fbDel('foods_v2/'+k);toast('「'+item.name+'」已全部用完','twn');}
+        else{await fbPatch('foods_v2/'+k,{updatedAt:Date.now(),updatedBy:cu});toast('批次已用完','tok');}
+        foods=o2a(await fbGet('foods_v2'));renderAll();
+      },'取消','刪除','conf-yes green');
+      return;
+    }
+    var nq=(Number.isInteger(n)?n:n.toFixed(1))+m[2];
+    await fbPatch('foods_v2/'+k+'/batches/'+eb._bk,{qty:nq});
+    await fbPatch('foods_v2/'+k,{updatedAt:Date.now(),updatedBy:cu});
+    toast(item.name+' → '+nq,'twn');
+    foods=o2a(await fbGet('foods_v2'));renderAll();
+  }else{openFoodSheet(k);}
+}
+function markUsed(k,name,e){
+  e&&e.stopPropagation();if(!cu){openUserModal();return;}
+  var item=foods.find(function(i){return i._k===k;});if(!item)return;
+  var bs=gBatches(item).sort(function(a,b){return (a.expiry?dl(a.expiry):9999)-(b.expiry?dl(b.expiry):9999);});
+  if(!bs.length)return;
+  showConf('📦','確認用完？','移除「'+name+'」最早批次（'+(bs[0].qty||'')+'），確定嗎？',async function(){
+    await fbDel('foods_v2/'+k+'/batches/'+bs[0]._bk);
+    if(bs.length===1){await fbDel('foods_v2/'+k);toast('「'+name+'」已全部用完','twn');}
+    else{await fbPatch('foods_v2/'+k,{updatedAt:Date.now(),updatedBy:cu});toast('最早批次已用完','tok');}
+    foods=o2a(await fbGet('foods_v2'));renderAll();
+  });
+}
+
+// ── FOOD MODAL ──
+function openFoodModal(type,k){
+  foodType=type||'fridge';eFoodK=k||null;
+  var item=k?foods.find(function(i){return i._k===k;}):null;
+  document.getElementById('fmTit').textContent=k?'編輯食材':'新增食材';
+  document.getElementById('fN').value=item?item.name:'';
+  document.getElementById('fLoc').value=item?item.location||'':'';
+  document.getElementById('fNote').value=item?item.note||'':'';
+  document.getElementById('fBuy').value=item?item.buyDate||'':'';
+  var eb=item?gEB(item):null;
+  document.getElementById('fQty').value=eb?eb.qty||'':'';
+  document.getElementById('fExp').value=eb?eb.expiry||'':'';
+  pBuf.food=item?item.photo||null:null;
+  setPrev('fPhPrev','fPhHint',pBuf.food);
+  // Show zone or category based on type
+  var isFr=foodType==='fridge';
+  document.getElementById('fZoneRow').style.display=isFr?'block':'none';
+  document.getElementById('fCatRow').style.display=isFr?'none':'block';
+  if(isFr){
+    document.querySelectorAll('.zo').forEach(function(o){o.classList.toggle('active',o.getAttribute('data-z')===(item?item.zone||'冷凍':'冷凍'));});
+  } else {
+    setTgl('fDCG',item?item.category||'零食餅乾':'零食餅乾',{零食餅乾:'ao',主食:'agr',調味料:'ag',罐頭:'at',沖泡:'ab'});
+  }
+  setTgl('fHG',item?item.house||'新家':'新家',{新家:'ab',舊家:'ag'});
+  document.getElementById('foodOv').classList.add('open');
+  setTimeout(function(){document.getElementById('fN').focus();},100);
+}
+function closeFoodModal(){document.getElementById('foodOv').classList.remove('open');eFoodK=null;pBuf.food=null;document.getElementById('fPhoto').value='';}
+async function saveFood(){
+  if(!cu){openUserModal();return;}
+  var name=document.getElementById('fN').value.trim();if(!name){toast('請填寫食材名稱','terr');return;}
+  var house=getTgl('fHG')||'新家';
+  var qty=document.getElementById('fQty').value.trim();
+  var exp=document.getElementById('fExp').value;
+  var isFr=foodType==='fridge';
+  var zone=isFr?(document.querySelector('.zo.active')?document.querySelector('.zo.active').getAttribute('data-z'):'冷凍'):'常溫';
+  var category=isFr?'':( getTgl('fDCG')||'零食餅乾');
+  var btn=document.getElementById('fSvBtn');btn.disabled=true;btn.textContent='儲存中…';
+  try{
+    var data={name:name,zone:zone,house:house,category:category,location:document.getElementById('fLoc').value.trim(),note:document.getElementById('fNote').value.trim(),buyDate:document.getElementById('fBuy').value,photo:pBuf.food,updatedAt:Date.now(),updatedBy:cu};
+    if(eFoodK){await fbPatch('foods_v2/'+eFoodK,data);toast('「'+name+'」已更新','tok');}
+    else{var batches=(qty||exp)?{b1:{qty:qty,expiry:exp,note:''}}:{};await fbPush('foods_v2',Object.assign({batches:batches,addedAt:Date.now()},data));toast('「'+name+'」已新增','tok');}
+    closeFoodModal();foods=o2a(await fbGet('foods_v2'));renderAll();
+  }catch(e){toast('儲存失敗','terr');}
+  btn.disabled=false;btn.textContent='儲存';
+}
+
+// ── MAINT MODAL ──
+function openMaintModal(k){
+  eMaintK=k||null;var item=k?maints.find(function(i){return i._k===k;}):null;
+  document.getElementById('mmTit').textContent=k?'編輯耗材':'新增耗材';
+  document.getElementById('mN').value=item?item.name:'';
+  document.getElementById('mCat').value=item?item.category||'':'';
+  document.getElementById('mCyc').value=item?item.cycle||'':'';
+  document.getElementById('mBrand').value=item?item.brand||'':'';
+  document.getElementById('mStock').value=item?item.stock||'':'';
+  document.getElementById('mLast').value=item?item.lastDate||'':'';
+  document.getElementById('mNote').value=item?item.note||'':'';
+  setTgl('mHG',item?item.house||'新家':'新家',{新家:'ab',舊家:'ag'});
+  document.getElementById('maintOv').classList.add('open');
+  setTimeout(function(){document.getElementById('mN').focus();},100);
+}
+function closeMaintModal(){document.getElementById('maintOv').classList.remove('open');eMaintK=null;}
+async function saveMaint(){
+  if(!cu){openUserModal();return;}
+  var name=document.getElementById('mN').value.trim();if(!name){toast('請填寫品項名稱','terr');return;}
+  var house=getTgl('mHG')||'新家';
+  var btn=document.getElementById('mSvBtn');btn.disabled=true;btn.textContent='儲存中…';
+  try{
+    var data={name:name,house:house,category:document.getElementById('mCat').value.trim(),cycle:parseInt(document.getElementById('mCyc').value)||null,brand:document.getElementById('mBrand').value.trim(),stock:document.getElementById('mStock').value.trim(),lastDate:document.getElementById('mLast').value,note:document.getElementById('mNote').value.trim(),updatedAt:Date.now(),updatedBy:cu};
+    if(eMaintK){await fbPatch('maints_v2/'+eMaintK,data);toast('「'+name+'」已更新','tok');}
+    else{await fbPush('maints_v2',Object.assign({addedAt:Date.now()},data));toast('「'+name+'」已新增','tok');}
+    closeMaintModal();maints=o2a(await fbGet('maints_v2'));renderAll();
+  }catch(e){toast('儲存失敗','terr');}
+  btn.disabled=false;btn.textContent='儲存';
+}
+
+// ── MAINT LOG ──
+function openMaintLogModal(){openMLogDirect(mdK);}
+function openMLogDirect(k){
+  mlogK=k;var item=maints.find(function(i){return i._k===k;});if(!item)return;
+  document.getElementById('mlogTit').textContent='記錄更換－'+item.name;
+  document.getElementById('mlDate').value=td();
+  ['mlUsed','mlAmt','mlNote'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('mlogOv').classList.add('open');
+}
+function closeMLog(){document.getElementById('mlogOv').classList.remove('open');}
+async function saveMLog(){
+  if(!cu){openUserModal();return;}
+  var used=document.getElementById('mlUsed').value.trim();
+  var amt=parseFloat(document.getElementById('mlAmt').value)||0;
+  var note=document.getElementById('mlNote').value.trim();
+  var date=document.getElementById('mlDate').value||td();
+  var item=maints.find(function(i){return i._k===mlogK;});if(!item)return;
+  // Auto deduct stock
+  var newStock=item.stock;
+  if(used&&item.stock){
+    var sm=item.stock.match(/^([\d.]+)(.*)/);
+    if(sm){var ns=parseFloat(sm[1])-(parseFloat(used)||0);newStock=(ns>0?(Number.isInteger(ns)?ns:ns.toFixed(1))+sm[2]:'0'+sm[2]);}
+  }
+  await fbPush('maints_v2/'+mlogK+'/history',{date:date,used:used,amount:amt,note:note,by:cu,createdAt:Date.now()});
+  await fbPatch('maints_v2/'+mlogK,{lastDate:date,stock:newStock,updatedAt:Date.now(),updatedBy:cu});
+  closeMLog();toast('已記錄更換！','tok');
+  maints=o2a(await fbGet('maints_v2'));renderAll();
+  var item2=maints.find(function(i){return i._k===mlogK;});
+  if(item2&&document.getElementById('maintSheet').classList.contains('open'))rfMaintHist(item2);
+}
+
+// ── ADD STOCK ──
+function openAddStock(k){
+  addStockK=k;var item=maints.find(function(i){return i._k===k;});if(!item)return;
+  ['asQty','asAmt','asNote'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('addStockOv').classList.add('open');
+}
+function closeAddStock(){document.getElementById('addStockOv').classList.remove('open');}
+async function saveAddStock(){
+  if(!cu){openUserModal();return;}
+  var qty=document.getElementById('asQty').value.trim();
+  var amt=parseFloat(document.getElementById('asAmt').value)||0;
+  var note=document.getElementById('asNote').value.trim();
+  var item=maints.find(function(i){return i._k===addStockK;});if(!item)return;
+  // Add to stock
+  var newStock=qty;
+  if(item.stock&&qty){
+    var sm=item.stock.match(/^([\d.]+)(.*)/);
+    var qm=qty.match(/^([\d.]+)(.*)/);
+    if(sm&&qm&&sm[2]===qm[2]){var ns=parseFloat(sm[1])+parseFloat(qm[1]);newStock=(Number.isInteger(ns)?ns:ns.toFixed(1))+sm[2];}
+    else{newStock=item.stock+' + '+qty;}
+  }
+  await fbPush('maints_v2/'+addStockK+'/history',{date:td(),used:'0',amount:amt,note:'入庫 '+qty+(note?' · '+note:''),by:cu,createdAt:Date.now()});
+  await fbPatch('maints_v2/'+addStockK,{stock:newStock,updatedAt:Date.now(),updatedBy:cu});
+  closeAddStock();toast('庫存已新增','tok');
+  maints=o2a(await fbGet('maints_v2'));renderAll();
+}
+
+// ── REPAIR MODAL ──
+function openRepairModal(k){
+  eRepairK=k||null;var item=k?repairs.find(function(i){return i._k===k;}):null;
+  document.getElementById('rmTit').textContent=k?'編輯品項':'新增品項';
+  document.getElementById('rN').value=item?item.name:'';
+  document.getElementById('rCat').value=item?item.category||'':'';
+  document.getElementById('rBrand').value=item?item.brand||'':'';
+  document.getElementById('rNote').value=item?item.note||'':'';
+  setTgl('rHG',item?item.house||'新家':'新家',{新家:'ab',舊家:'ag'});
+  document.getElementById('repairOv').classList.add('open');
+  setTimeout(function(){document.getElementById('rN').focus();},100);
+}
+function closeRepairModal(){document.getElementById('repairOv').classList.remove('open');eRepairK=null;}
+async function saveRepair(){
+  if(!cu){openUserModal();return;}
+  var name=document.getElementById('rN').value.trim();if(!name){toast('請填寫品項名稱','terr');return;}
+  var house=getTgl('rHG')||'新家';
+  var btn=document.getElementById('rSvBtn');btn.disabled=true;btn.textContent='儲存中…';
+  try{
+    var data={name:name,house:house,category:document.getElementById('rCat').value.trim(),brand:document.getElementById('rBrand').value.trim(),note:document.getElementById('rNote').value.trim(),updatedAt:Date.now(),updatedBy:cu};
+    if(eRepairK){await fbPatch('repairs2/'+eRepairK,data);toast('「'+name+'」已更新','tok');}
+    else{await fbPush('repairs2',Object.assign({addedAt:Date.now()},data));toast('「'+name+'」已新增','tok');}
+    closeRepairModal();repairs=o2a(await fbGet('repairs2'));renderAll();
+  }catch(e){toast('儲存失敗','terr');}
+  btn.disabled=false;btn.textContent='儲存';
+}
+
+// ── REPAIR LOG ──
+function openRepLogModal(type,k){
+  rlogType=type;rlogK=k||rdK;
+  document.getElementById('rlogTit').textContent=(type==='maint'?'新增保養紀錄':'新增維修紀錄');
+  document.getElementById('rlCycRow').style.display=type==='maint'?'block':'none';
+  document.getElementById('rlDate').value=td();
+  ['rlAmt','rlCyc','rlProb','rlSol','rlVen','rlNote'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('rlogOv').classList.add('open');
+}
+function closeRLog(){document.getElementById('rlogOv').classList.remove('open');}
+async function saveRLog(){
+  if(!cu){openUserModal();return;}
+  var date=document.getElementById('rlDate').value||td();
+  var path='repairs2/'+rlogK+'/'+(rlogType==='maint'?'maintLogs':'repairLogs');
+  var cyc=rlogType==='maint'?parseInt(document.getElementById('rlCyc').value)||null:null;
+  await fbPush(path,{date:date,amount:parseFloat(document.getElementById('rlAmt').value)||0,cycle:cyc,problem:document.getElementById('rlProb').value.trim(),solution:document.getElementById('rlSol').value.trim(),vendor:document.getElementById('rlVen').value.trim(),note:document.getElementById('rlNote').value.trim(),by:cu,createdAt:Date.now()});
+  await fbPatch('repairs2/'+rlogK,{updatedAt:Date.now(),updatedBy:cu});
+  closeRLog();toast('紀錄已新增','tok');
+  repairs=o2a(await fbGet('repairs2'));renderAll();
+  var item=repairs.find(function(i){return i._k===rlogK;});
+  if(item&&document.getElementById('repairSheet').classList.contains('open'))rfRepairSheet(item);
+}
+
+// ── HIST EDIT ──
+function openHE(type,ik,rk){
+  heType=type;heIK=ik;heRK=rk;
+  var item=type==='maint'?maints.find(function(i){return i._k===ik;}):null;
+  var hs=item?gHist(item,'history'):[];
+  var h=hs.find(function(x){return x._hk===rk;});if(!h)return;
+  document.getElementById('heDate').value=h.date||td();
+  document.getElementById('heAmt').value=h.amount||'';
+  document.getElementById('heNote').value=h.note||'';
+  document.getElementById('heOv').classList.add('open');
+}
+function closeHE(){document.getElementById('heOv').classList.remove('open');}
+async function saveHE(){
+  if(!cu){openUserModal();return;}
+  await fbPatch('maints_v2/'+heIK+'/history/'+heRK,{date:document.getElementById('heDate').value,amount:parseFloat(document.getElementById('heAmt').value)||0,note:document.getElementById('heNote').value.trim(),by:cu});
+  await fbPatch('maints_v2/'+heIK,{updatedAt:Date.now(),updatedBy:cu});
+  closeHE();toast('已更新','tok');
+  maints=o2a(await fbGet('maints_v2'));renderAll();
+  var item=maints.find(function(i){return i._k===heIK;});
+  if(item)rfMaintHist(item);
+}
+async function delHist(type,ik,rk){
+  showConf('🗑️','刪除紀錄？','確定要刪除這筆紀錄嗎？',async function(){
+    await fbDel('maints_v2/'+ik+'/history/'+rk);
+    maints=o2a(await fbGet('maints_v2'));renderAll();
+    var item=maints.find(function(i){return i._k===ik;});if(item)rfMaintHist(item);
+    toast('已刪除','twn');
+  });
+}
+function openRepHE(type,ik,rk){toast('編輯功能開發中','twn');}
+async function delRepHist(type,ik,rk){
+  showConf('🗑️','刪除紀錄？','確定要刪除這筆紀錄嗎？',async function(){
+    var path='repairs2/'+ik+'/'+(type==='maint'?'maintLogs':'repairLogs')+'/'+rk;
+    await fbDel(path);repairs=o2a(await fbGet('repairs2'));renderAll();
+    var item=repairs.find(function(i){return i._k===ik;});if(item)rfRepairSheet(item);
+    toast('已刪除','twn');
+  });
+}
+
+// ── CONFIRM MODAL ──
+function showConf(icon,title,msg,cb,noTxt,yesTxt,yesClass){
+  confCb=cb;
+  document.getElementById('confIcon').textContent=icon||'🗑️';
+  document.getElementById('confTitle').textContent=title;
+  document.getElementById('confMsg').textContent=msg;
+  document.getElementById('confOv').querySelector('.conf-no').textContent=noTxt||'取消';
+  var yBtn=document.getElementById('confYes');yBtn.textContent=yesTxt||'確認刪除';
+  yBtn.className='conf-yes'+(yesClass?' '+yesClass:'');
+  document.getElementById('confOv').classList.add('open');
+}
+function closeConf(){document.getElementById('confOv').classList.remove('open');confCb=null;}
+async function doConf(){closeConf();if(confCb)await confCb();}
+
+// ── FILTERS ──
+function setFZ(el){afz=el.getAttribute('data-fz');document.querySelectorAll('[data-fz]').forEach(function(t){t.classList.remove('active');});el.classList.add('active');renderFridge();}
+function setFH(el){afh=el.getAttribute('data-fh');document.querySelectorAll('[data-fh]').forEach(function(t){t.classList.remove('active','hact');});el.classList.add('hact');renderFridge();}
+function setDC(el){adc=el.getAttribute('data-dc');document.querySelectorAll('[data-dc]').forEach(function(t){t.classList.remove('active');});el.classList.add('active');renderDry();}
+function setDH(el){adh=el.getAttribute('data-dh');document.querySelectorAll('[data-dh]').forEach(function(t){t.classList.remove('active','hact');});el.classList.add('hact');renderDry();}
+
+// ── PHOTO ──
+function handlePh(input,prevId,hintId,type){
+  var file=input.files[0];if(!file)return;
+  var canvas=document.createElement('canvas');var img=new Image();var url=URL.createObjectURL(file);
+  img.onload=function(){var MAX=600;var w=img.width,h=img.height;if(w>h&&w>MAX){h=h*MAX/w;w=MAX;}else if(h>MAX){w=w*MAX/h;h=MAX;}canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);pBuf[type]=canvas.toDataURL('image/jpeg',.75);setPrev(prevId,hintId,pBuf[type]);URL.revokeObjectURL(url);};img.src=url;
+}
+function setPrev(prevId,hintId,buf){var p=document.getElementById(prevId),h=document.getElementById(hintId);if(buf){p.src=buf;p.style.display='block';h.style.display='none';}else{p.style.display='none';h.style.display='flex';}}
+
+// ── TOGGLE ──
+function tgl(gid,btn,activeClass){
+  var g=document.getElementById(gid);if(!g)return;
+  var allC=['ab','ag','agr','ao','at','ap'];
+  g.querySelectorAll('.tb').forEach(function(b){allC.forEach(function(c){b.classList.remove(c);});});
+  btn.classList.add(activeClass);
+}
+function setTgl(gid,val,classMap){
+  var g=document.getElementById(gid);if(!g)return;
+  var allC=['ab','ag','agr','ao','at','ap'];
+  g.querySelectorAll('.tb').forEach(function(b){
+    allC.forEach(function(c){b.classList.remove(c);});
+    if(b.getAttribute('data-v')===val&&classMap[val])b.classList.add(classMap[val]);
+  });
+}
+function getTgl(gid){
+  var g=document.getElementById(gid);if(!g)return null;
+  var allC=['ab','ag','agr','ao','at','ap'];
+  var found=null;
+  g.querySelectorAll('.tb').forEach(function(b){allC.forEach(function(c){if(b.classList.contains(c))found=b.getAttribute('data-v');});});
+  return found;
+}
+function selZone(el){document.querySelectorAll('.zo').forEach(function(o){o.classList.remove('active');});el.classList.add('active');}
+
+// ── USER ──
+function openUserModal(){document.getElementById('userOv').classList.add('open');document.getElementById('uInp').value=cu;buildUPre();}
+function saveUser(){
+  var name=document.getElementById('uInp').value.trim();if(!name){toast('請輸入名字','terr');return;}
+  cu=name;localStorage.setItem('hg2_user',name);
+  document.getElementById('uname').textContent=name;
+  document.getElementById('userOv').classList.remove('open');
+  fbPush('users',name);toast('歡迎，'+name+'！','tok');
+}
+function buildUPre(){
+  var saved=localStorage.getItem('hg2_user');
+  var un=[...new Set(users)].filter(Boolean).slice(0,8);
+  document.getElementById('uPre').innerHTML=un.map(function(u){return '<div class="upr'+(u===saved?' sel':'')+'" onclick="pickU(\''+esc(u)+'\')">'+esc(u)+'</div>';}).join('');
+}
+function pickU(name){document.getElementById('uInp').value=name;document.querySelectorAll('.upr').forEach(function(p){p.classList.toggle('sel',p.textContent===name);});}
+
+// ── TOAST ──
+function toast(msg,cls){
+  var el=document.createElement('div');el.className='toast '+cls;el.textContent=msg;
+  document.getElementById('toasts').appendChild(el);
+  requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('show');});});
+  setTimeout(function(){el.classList.remove('show');setTimeout(function(){el.remove();},350);},2800);
+}
+
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    ['foodOv','batchOv','maintOv','mlogOv','addStockOv','repairOv','rlogOv','heOv','confOv','userOv'].forEach(function(id){document.getElementById(id).classList.remove('open');});
+    ['foodSheet','maintSheet','repairSheet'].forEach(function(id){document.getElementById(id).classList.remove('open');});
+  }
+});
+
+init();
+</script>
+</body>
+</html>
