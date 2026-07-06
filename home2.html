@@ -495,7 +495,7 @@ label{display:block;font-size:10px;font-weight:600;color:var(--text-x);margin-bo
 </div>
 
 <!-- FOOD MODAL -->
-<div class="ov" id="foodOv" onclick="if(event.target===this)closeFoodModal()">
+<div class="ov" id="foodOv" style="z-index:600" onclick="if(event.target===this)closeFoodModal()">
   <div class="modal">
     <div class="mhdr"><div class="mtitle" id="fmTit">新增食材</div><button class="mclose" onclick="closeFoodModal()">✕</button></div>
     <div class="pa"><input type="file" id="fPhoto" accept="image/*" onchange="handlePh(this,'fPhPrev','fPhHint','food')"><div class="ph" id="fPhHint"><div class="pi">📷</div><div>點擊上傳照片</div></div><img id="fPhPrev" style="display:none"></div>
@@ -521,7 +521,7 @@ label{display:block;font-size:10px;font-weight:600;color:var(--text-x);margin-bo
 </div>
 
 <!-- BATCH MODAL -->
-<div class="ov" id="batchOv" onclick="if(event.target===this)closeBatchModal()">
+<div class="ov" id="batchOv" style="z-index:600" onclick="if(event.target===this)closeBatchModal()">
   <div class="modal sm">
     <div class="mhdr"><div class="mtitle" id="bmTit">新增批次</div><button class="mclose" onclick="closeBatchModal()">✕</button></div>
     <div class="fg">
@@ -534,7 +534,7 @@ label{display:block;font-size:10px;font-weight:600;color:var(--text-x);margin-bo
 </div>
 
 <!-- MAINT MODAL -->
-<div class="ov" id="maintOv" onclick="if(event.target===this)closeMaintModal()">
+<div class="ov" id="maintOv" style="z-index:600" onclick="if(event.target===this)closeMaintModal()">
   <div class="modal">
     <div class="mhdr"><div class="mtitle" id="mmTit">新增耗材</div><button class="mclose" onclick="closeMaintModal()">✕</button></div>
     <div class="fg">
@@ -552,7 +552,7 @@ label{display:block;font-size:10px;font-weight:600;color:var(--text-x);margin-bo
 </div>
 
 <!-- MAINT LOG MODAL (已換/新增庫存) -->
-<div class="ov" id="mlogOv" onclick="if(event.target===this)closeMLog()">
+<div class="ov" id="mlogOv" style="z-index:600" onclick="if(event.target===this)closeMLog()">
   <div class="modal sm">
     <div class="mhdr"><div class="mtitle" id="mlogTit">記錄更換</div><button class="mclose" onclick="closeMLog()">✕</button></div>
     <div class="fg">
@@ -566,7 +566,7 @@ label{display:block;font-size:10px;font-weight:600;color:var(--text-x);margin-bo
 </div>
 
 <!-- ADD STOCK MODAL -->
-<div class="ov" id="addStockOv" onclick="if(event.target===this)closeAddStock()">
+<div class="ov" id="addStockOv" style="z-index:600" onclick="if(event.target===this)closeAddStock()">
   <div class="modal sm">
     <div class="mhdr"><div class="mtitle">新增庫存</div><button class="mclose" onclick="closeAddStock()">✕</button></div>
     <div class="fg">
@@ -579,7 +579,7 @@ label{display:block;font-size:10px;font-weight:600;color:var(--text-x);margin-bo
 </div>
 
 <!-- REPAIR MODAL -->
-<div class="ov" id="repairOv" onclick="if(event.target===this)closeRepairModal()">
+<div class="ov" id="repairOv" style="z-index:600" onclick="if(event.target===this)closeRepairModal()">
   <div class="modal">
     <div class="mhdr"><div class="mtitle" id="rmTit">新增品項</div><button class="mclose" onclick="closeRepairModal()">✕</button></div>
     <div class="fg">
@@ -594,7 +594,7 @@ label{display:block;font-size:10px;font-weight:600;color:var(--text-x);margin-bo
 </div>
 
 <!-- REPAIR LOG MODAL -->
-<div class="ov" id="rlogOv" onclick="if(event.target===this)closeRLog()">
+<div class="ov" id="rlogOv" style="z-index:600" onclick="if(event.target===this)closeRLog()">
   <div class="modal">
     <div class="mhdr"><div class="mtitle" id="rlogTit">新增保養紀錄</div><button class="mclose" onclick="closeRLog()">✕</button></div>
     <div class="fg">
@@ -611,7 +611,7 @@ label{display:block;font-size:10px;font-weight:600;color:var(--text-x);margin-bo
 </div>
 
 <!-- HIST EDIT -->
-<div class="ov" id="heOv" onclick="if(event.target===this)closeHE()">
+<div class="ov" id="heOv" style="z-index:600" onclick="if(event.target===this)closeHE()">
   <div class="modal sm">
     <div class="mhdr"><div class="mtitle">編輯紀錄</div><button class="mclose" onclick="closeHE()">✕</button></div>
     <div class="fg">
@@ -637,7 +637,7 @@ label{display:block;font-size:10px;font-weight:600;color:var(--text-x);margin-bo
 </div>
 
 <!-- USER MODAL -->
-<div class="ov" id="userOv" onclick="if(event.target===this&&cu)this.classList.remove('open')">
+<div class="ov" id="userOv" style="z-index:600" onclick="if(event.target===this&&cu)this.classList.remove('open')">
   <div class="umod">
     <h2>你是誰？👋</h2>
     <p>設定名字，讓家人知道是誰更新了紀錄</p>
@@ -739,7 +739,7 @@ function renderHome(){
   document.getElementById('d-warn').textContent=warnItems.length;
   document.getElementById('d-maint').textContent=maintWarn.length;
   // Alert list - expired + warn
-  var alerts=allFoods.filter(function(i){var eb=gEB(i);var d=eb?dl(eb.expiry):null;return d!==null&&d<=7;}).sort(function(a,b){var da=dl(gEB(a).expiry)||0,db2=dl(gEB(b).expiry)||0;return da-db2;}).slice(0,10);
+  var alerts=allFoods.filter(function(i){var eb=gEB(i);var d=eb?dl(eb.expiry):null;return d!==null&&d<=30;}).sort(function(a,b){var ea=gEB(a),eb2=gEB(b);var da=ea?dl(ea.expiry):9999,db2=eb2?dl(eb2.expiry):9999;return da-db2;}).slice(0,15);
   var al=document.getElementById('alertList');
   if(!alerts.length){al.innerHTML='<div style="color:var(--text-x);font-size:13px;text-align:center;padding:16px">近期無到期食材 🎉</div>';return;}
   al.innerHTML=alerts.map(function(item){
@@ -1035,15 +1035,17 @@ async function delRepairSh(){
 }
 
 // ── BATCH ──
-function openBatchModal(){batchK=fdK;_openBatch();}
+function openBatchModal(){
+  lowerSheets();batchK=fdK;_openBatch();}
 function openBatchDirect(k,e){e&&e.stopPropagation();batchK=k;_openBatch();}
 function _openBatch(){
+  lowerSheets();
   var item=foods.find(function(i){return i._k===batchK;});
   document.getElementById('bmTit').textContent='新增批次－'+(item?item.name:'');
   ['bQty','bExp','bNote'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('batchOv').classList.add('open');
 }
-function closeBatchModal(){document.getElementById('batchOv').classList.remove('open');}
+function closeBatchModal(){document.getElementById('batchOv').classList.remove('open');restoreSheets();}
 async function saveBatch(){
   var qty=document.getElementById('bQty').value.trim();
   var exp=document.getElementById('bExp').value;
@@ -1134,7 +1136,7 @@ function openFoodModal(type,k){
   document.getElementById('foodOv').classList.add('open');
   setTimeout(function(){document.getElementById('fN').focus();},100);
 }
-function closeFoodModal(){document.getElementById('foodOv').classList.remove('open');eFoodK=null;pBuf.food=null;document.getElementById('fPhoto').value='';}
+function closeFoodModal(){document.getElementById('foodOv').classList.remove('open');eFoodK=null;pBuf.food=null;document.getElementById('fPhoto').value='';restoreSheets();}
 async function saveFood(){
   if(!cu){openUserModal();return;}
   var name=document.getElementById('fN').value.trim();if(!name){toast('請填寫食材名稱','terr');return;}
@@ -1156,6 +1158,7 @@ async function saveFood(){
 
 // ── MAINT MODAL ──
 function openMaintModal(k){
+  lowerSheets();
   eMaintK=k||null;var item=k?maints.find(function(i){return i._k===k;}):null;
   document.getElementById('mmTit').textContent=k?'編輯耗材':'新增耗材';
   document.getElementById('mN').value=item?item.name:'';
@@ -1169,7 +1172,7 @@ function openMaintModal(k){
   document.getElementById('maintOv').classList.add('open');
   setTimeout(function(){document.getElementById('mN').focus();},100);
 }
-function closeMaintModal(){document.getElementById('maintOv').classList.remove('open');eMaintK=null;}
+function closeMaintModal(){document.getElementById('maintOv').classList.remove('open');eMaintK=null;restoreSheets();}
 async function saveMaint(){
   if(!cu){openUserModal();return;}
   var name=document.getElementById('mN').value.trim();if(!name){toast('請填寫品項名稱','terr');return;}
@@ -1185,15 +1188,17 @@ async function saveMaint(){
 }
 
 // ── MAINT LOG ──
-function openMaintLogModal(){openMLogDirect(mdK);}
+function openMaintLogModal(){
+  lowerSheets();openMLogDirect(mdK);}
 function openMLogDirect(k){
+  lowerSheets();
   mlogK=k;var item=maints.find(function(i){return i._k===k;});if(!item)return;
   document.getElementById('mlogTit').textContent='記錄更換－'+item.name;
   document.getElementById('mlDate').value=td();
   ['mlUsed','mlAmt','mlNote'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('mlogOv').classList.add('open');
 }
-function closeMLog(){document.getElementById('mlogOv').classList.remove('open');}
+function closeMLog(){document.getElementById('mlogOv').classList.remove('open');restoreSheets();}
 async function saveMLog(){
   if(!cu){openUserModal();return;}
   var used=document.getElementById('mlUsed').value.trim();
@@ -1217,11 +1222,12 @@ async function saveMLog(){
 
 // ── ADD STOCK ──
 function openAddStock(k){
+  lowerSheets();
   addStockK=k;var item=maints.find(function(i){return i._k===k;});if(!item)return;
   ['asQty','asAmt','asNote'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('addStockOv').classList.add('open');
 }
-function closeAddStock(){document.getElementById('addStockOv').classList.remove('open');}
+function closeAddStock(){document.getElementById('addStockOv').classList.remove('open');restoreSheets();}
 async function saveAddStock(){
   if(!cu){openUserModal();return;}
   var qty=document.getElementById('asQty').value.trim();
@@ -1244,6 +1250,7 @@ async function saveAddStock(){
 
 // ── REPAIR MODAL ──
 function openRepairModal(k){
+  lowerSheets();
   eRepairK=k||null;var item=k?repairs.find(function(i){return i._k===k;}):null;
   document.getElementById('rmTit').textContent=k?'編輯品項':'新增品項';
   document.getElementById('rN').value=item?item.name:'';
@@ -1254,7 +1261,7 @@ function openRepairModal(k){
   document.getElementById('repairOv').classList.add('open');
   setTimeout(function(){document.getElementById('rN').focus();},100);
 }
-function closeRepairModal(){document.getElementById('repairOv').classList.remove('open');eRepairK=null;}
+function closeRepairModal(){document.getElementById('repairOv').classList.remove('open');eRepairK=null;restoreSheets();}
 async function saveRepair(){
   if(!cu){openUserModal();return;}
   var name=document.getElementById('rN').value.trim();if(!name){toast('請填寫品項名稱','terr');return;}
@@ -1271,6 +1278,7 @@ async function saveRepair(){
 
 // ── REPAIR LOG ──
 function openRepLogModal(type,k){
+  lowerSheets();
   rlogType=type;rlogK=k||rdK;
   document.getElementById('rlogTit').textContent=(type==='maint'?'新增保養紀錄':'新增維修紀錄');
   document.getElementById('rlCycRow').style.display=type==='maint'?'block':'none';
@@ -1278,7 +1286,7 @@ function openRepLogModal(type,k){
   ['rlAmt','rlCyc','rlProb','rlSol','rlVen','rlNote'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('rlogOv').classList.add('open');
 }
-function closeRLog(){document.getElementById('rlogOv').classList.remove('open');}
+function closeRLog(){document.getElementById('rlogOv').classList.remove('open');restoreSheets();}
 async function saveRLog(){
   if(!cu){openUserModal();return;}
   var date=document.getElementById('rlDate').value||td();
@@ -1294,6 +1302,7 @@ async function saveRLog(){
 
 // ── HIST EDIT ──
 function openHE(type,ik,rk){
+  lowerSheets();
   heType=type;heIK=ik;heRK=rk;
   var item=type==='maint'?maints.find(function(i){return i._k===ik;}):null;
   var hs=item?gHist(item,'history'):[];
@@ -1303,15 +1312,32 @@ function openHE(type,ik,rk){
   document.getElementById('heNote').value=h.note||'';
   document.getElementById('heOv').classList.add('open');
 }
-function closeHE(){document.getElementById('heOv').classList.remove('open');}
+function closeHE(){
+  document.getElementById('heOv').classList.remove('open');
+  restoreSheets();
+}
 async function saveHE(){
   if(!cu){openUserModal();return;}
-  await fbPatch('maints_v2/'+heIK+'/history/'+heRK,{date:document.getElementById('heDate').value,amount:parseFloat(document.getElementById('heAmt').value)||0,note:document.getElementById('heNote').value.trim(),by:cu});
-  await fbPatch('maints_v2/'+heIK,{updatedAt:Date.now(),updatedBy:cu});
-  closeHE();toast('已更新','tok');
-  maints=o2a(await fbGet('maints_v2'));renderAll();
-  var item=maints.find(function(i){return i._k===heIK;});
-  if(item)rfMaintHist(item);
+  var date=document.getElementById('heDate').value;
+  var amt=parseFloat(document.getElementById('heAmt').value)||0;
+  var note=document.getElementById('heNote').value.trim();
+  if(heType==='maint'){
+    await fbPatch('maints_v2/'+heIK+'/history/'+heRK,{date:date,amount:amt,note:note,by:cu});
+    await fbPatch('maints_v2/'+heIK,{updatedAt:Date.now(),updatedBy:cu});
+    closeHE();toast('已更新','tok');
+    maints=o2a(await fbGet('maints_v2'));renderAll();
+    var item=maints.find(function(i){return i._k===heIK;});
+    if(item)rfMaintHist(item);
+  } else {
+    var logType=heType.replace('repair_','');
+    var path='repairs2/'+heIK+'/'+(logType==='maint'?'maintLogs':'repairLogs')+'/'+heRK;
+    await fbPatch(path,{date:date,amount:amt,note:note,by:cu});
+    await fbPatch('repairs2/'+heIK,{updatedAt:Date.now(),updatedBy:cu});
+    closeHE();toast('已更新','tok');
+    repairs=o2a(await fbGet('repairs2'));renderAll();
+    var item2=repairs.find(function(i){return i._k===heIK;});
+    if(item2)rfRepairSheet(item2);
+  }
 }
 async function delHist(type,ik,rk){
   showConf('🗑️','刪除紀錄？','確定要刪除這筆紀錄嗎？',async function(){
@@ -1321,7 +1347,18 @@ async function delHist(type,ik,rk){
     toast('已刪除','twn');
   });
 }
-function openRepHE(type,ik,rk){toast('編輯功能開發中','twn');}
+function openRepHE(type,ik,rk){
+  heType='repair_'+type; heIK=ik; heRK=rk;
+  var item=repairs.find(function(i){return i._k===ik;});if(!item)return;
+  var path=type==='maint'?'maintLogs':'repairLogs';
+  var hs=gHist(item,path);
+  var h=hs.find(function(x){return x._hk===rk;});if(!h)return;
+  document.getElementById('heDate').value=h.date||td();
+  document.getElementById('heAmt').value=h.amount||'';
+  document.getElementById('heNote').value=h.note||h.problem||'';
+  lowerSheets();
+  document.getElementById('heOv').classList.add('open');
+}
 async function delRepHist(type,ik,rk){
   showConf('🗑️','刪除紀錄？','確定要刪除這筆紀錄嗎？',async function(){
     var path='repairs2/'+ik+'/'+(type==='maint'?'maintLogs':'repairLogs')+'/'+rk;
@@ -1334,7 +1371,7 @@ async function delRepHist(type,ik,rk){
 // ── CONFIRM MODAL ──
 function showConf(icon,title,msg,cb,noTxt,yesTxt,yesClass){
   // Temporarily lower sheet z-index so conf is always on top
-  document.querySelectorAll('.sov.open').forEach(function(s){s.style.zIndex='100';});
+  lowerSheets();
   confCb=cb;
   document.getElementById('confIcon').textContent=icon||'🗑️';
   document.getElementById('confTitle').textContent=title;
@@ -1391,7 +1428,8 @@ function getTgl(gid){
 function selZone(el){document.querySelectorAll('.zo').forEach(function(o){o.classList.remove('active');});el.classList.add('active');}
 
 // ── USER ──
-function openUserModal(){document.getElementById('userOv').classList.add('open');document.getElementById('uInp').value=cu;buildUPre();}
+function openUserModal(){
+  lowerSheets();document.getElementById('userOv').classList.add('open');document.getElementById('uInp').value=cu;buildUPre();}
 function saveUser(){
   var name=document.getElementById('uInp').value.trim();if(!name){toast('請輸入名字','terr');return;}
   cu=name;localStorage.setItem('hg2_user',name);
@@ -1420,6 +1458,11 @@ document.addEventListener('keydown',function(e){
     ['foodSheet','maintSheet','repairSheet'].forEach(function(id){document.getElementById(id).classList.remove('open');});
   }
 });
+
+
+// Helper: lower sheets when modal opens on top
+function lowerSheets(){document.querySelectorAll('.sov.open').forEach(function(s){s.style.zIndex='50';});}
+function restoreSheets(){document.querySelectorAll('.sov').forEach(function(s){s.style.zIndex='';});}
 
 init();
 </script>
