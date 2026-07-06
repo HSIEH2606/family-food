@@ -624,7 +624,7 @@ label{display:block;font-size:10px;font-weight:600;color:var(--text-x);margin-bo
 </div>
 
 <!-- CONFIRM MODAL -->
-<div class="ov" id="confOv">
+<div class="ov" id="confOv" style="z-index:600">
   <div class="conf-modal">
     <div class="conf-icon" id="confIcon">🗑️</div>
     <div class="conf-title" id="confTitle">確認刪除</div>
@@ -1333,6 +1333,8 @@ async function delRepHist(type,ik,rk){
 
 // ── CONFIRM MODAL ──
 function showConf(icon,title,msg,cb,noTxt,yesTxt,yesClass){
+  // Temporarily lower sheet z-index so conf is always on top
+  document.querySelectorAll('.sov.open').forEach(function(s){s.style.zIndex='100';});
   confCb=cb;
   document.getElementById('confIcon').textContent=icon||'🗑️';
   document.getElementById('confTitle').textContent=title;
@@ -1342,7 +1344,12 @@ function showConf(icon,title,msg,cb,noTxt,yesTxt,yesClass){
   yBtn.className='conf-yes'+(yesClass?' '+yesClass:'');
   document.getElementById('confOv').classList.add('open');
 }
-function closeConf(){document.getElementById('confOv').classList.remove('open');confCb=null;}
+function closeConf(){
+  document.getElementById('confOv').classList.remove('open');
+  confCb=null;
+  // Restore sheet z-index
+  document.querySelectorAll('.sov').forEach(function(s){s.style.zIndex='';});
+}
 async function doConf(){closeConf();if(confCb)await confCb();}
 
 // ── FILTERS ──
