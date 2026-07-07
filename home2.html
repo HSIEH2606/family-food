@@ -899,6 +899,7 @@ function renderRepair(){
   var allRep=repairs.reduce(function(s,i){return s+gHist(i,'repairLogs').length;},0);
   document.getElementById('rsM').textContent=allLogs;
   document.getElementById('rsR').textContent=allRep;
+  // Force re-render to sync with latest data
   var cats=[...new Set(repairs.map(function(i){return i.category;}).filter(Boolean))].sort();
   document.getElementById('rCatDL').innerHTML=cats.map(function(c){return '<option value="'+esc(c)+'">';}).join('');
   var el=document.getElementById('repairList');
@@ -1362,8 +1363,13 @@ function openRepHE(type,ik,rk){
 async function delRepHist(type,ik,rk){
   showConf('🗑️','刪除紀錄？','確定要刪除這筆紀錄嗎？',async function(){
     var path='repairs2/'+ik+'/'+(type==='maint'?'maintLogs':'repairLogs')+'/'+rk;
-    await fbDel(path);repairs=o2a(await fbGet('repairs2'));renderAll();
-    var item=repairs.find(function(i){return i._k===ik;});if(item)rfRepairSheet(item);
+    await fbDel(path);
+    repairs=o2a(await fbGet('repairs2'));
+    renderRepair();
+    var item=repairs.find(function(i){return i._k===ik;});
+    if(item&&document.getElementById('repairSheet').classList.contains('open')){
+      rfRepairSheet(item);
+    }
     toast('已刪除','twn');
   });
 }
