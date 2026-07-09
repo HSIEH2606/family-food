@@ -624,7 +624,7 @@ label{display:block;font-size:10px;font-weight:600;color:var(--text-x);margin-bo
 </div>
 
 <!-- CONFIRM MODAL -->
-<div class="ov" id="confOv" style="z-index:600">
+<div class="ov" id="confOv" style="z-index:600" onclick="if(event.target===this)closeConf()">
   <div class="conf-modal">
     <div class="conf-icon" id="confIcon">🗑️</div>
     <div class="conf-title" id="confTitle">確認刪除</div>
@@ -899,7 +899,6 @@ function renderRepair(){
   var allRep=repairs.reduce(function(s,i){return s+gHist(i,'repairLogs').length;},0);
   document.getElementById('rsM').textContent=allLogs;
   document.getElementById('rsR').textContent=allRep;
-  // Force re-render to sync with latest data
   var cats=[...new Set(repairs.map(function(i){return i.category;}).filter(Boolean))].sort();
   document.getElementById('rCatDL').innerHTML=cats.map(function(c){return '<option value="'+esc(c)+'">';}).join('');
   var el=document.getElementById('repairList');
@@ -1428,7 +1427,11 @@ function getTgl(gid){
   var g=document.getElementById(gid);if(!g)return null;
   var allC=['ab','ag','agr','ao','at','ap'];
   var found=null;
-  g.querySelectorAll('.tb').forEach(function(b){allC.forEach(function(c){if(b.classList.contains(c))found=b.getAttribute('data-v');});});
+  g.querySelectorAll('.tb').forEach(function(b){
+    allC.forEach(function(c){if(b.classList.contains(c)&&!found)found=b.getAttribute('data-v');});
+  });
+  // fallback: return first button's value
+  if(!found){var first=g.querySelector('.tb');if(first)found=first.getAttribute('data-v');}
   return found;
 }
 function selZone(el){document.querySelectorAll('.zo').forEach(function(o){o.classList.remove('active');});el.classList.add('active');}
